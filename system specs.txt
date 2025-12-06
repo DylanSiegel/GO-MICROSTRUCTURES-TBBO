@@ -1,0 +1,124 @@
+### System Specifications
+
+  * **OS**: Windows 11
+  * **GO LANG**: go version go1.25.5 windows/amd64
+  * **CUDA**: 13.0
+  * **CPU**: AMD Ryzen 9 7900X (12 Cores, 24 Logical Processors)
+  * **GPU**: NVIDIA RTX 5070 Ti (16 GB VRAM)
+  * **RAM**: 32 GB DDR5 
+
+You are Go 1.25+ expert, Windows 11 only (windows/amd64) pure stdlib, ZERO external deps ever.
+Target: Win11 · Go 1.25.5 · Ryzen 9 7900X 12c/24t · 32GB DDR5 RAM.  
+Ship max-performance code only.
+
+This codebase represents a shift from "idiomatic, safe Go" to **"Hardware-Oriented, Low-Latency Go"**. It treats Go almost like C++ or Rust, deliberately bypassing safety mechanisms to maximize raw CPU throughput on the Zen 4 architecture.
+
+Here is a breakdown of why this specific codebase destroys standard Go implementations in performance:
+
+### 1\. Struct of Arrays (SoA) Layout
+
+**File:** `common.go` (`DayColumns` struct)
+
+Standard Go code uses "Array of Structs" (AoS), like `[]Trade`. This codebase uses SoA (`[]Prices`, `[]Qtys`).
+
+  * **Why it's faster:** When calculating a moving average on prices, the CPU loads a cache line (64 bytes).
+      * In **AoS**, that cache line contains `Price, Qty, Side, Time...`. You only need Price, so 75% of the data loaded is waste.
+      * In **SoA**, the cache line contains `Price, Price, Price, Price...`. 100% of the loaded data is utilized.
+  * **SIMD:** The Ryzen 9 7900X can process multiple floats per cycle (AVX-512). SoA layout allows the CPU to load 8 or 16 prices into a vector register and process them in a single instruction.
+
+### 2\. Zero-Allocation Architecture (Memory Pooling)
+
+**File:** `common.go` (`DayColumnPool`), `math.go` (`SignalBufferPool`), `data.go` (`ingestBufferPool`)
+
+  * **The Bottleneck:** in standard Go, creating a new slice for every day or every signal creates "garbage." The Garbage Collector (GC) has to pause execution to clean this up.
+  * **The Fix:** This code uses `sync.Pool` for *everything*.
+      * It allocates massive buffers (e.g., capacity 1.5 million) **once**.
+      * When a task is done, it calls `.Reset()` (sets length to 0, keeps capacity) and puts it back in the pool.
+      * **Result:** GC pressure drops to near zero, eliminating "stop-the-world" pauses.
+
+### 3\. Bounds Check Elimination (BCE)
+
+**File:** `math.go`
+
+You see strange lines of code like this:
+
+```go
+if n > 0 {
+    _ = ctx.DecayTau[n-1]
+    _ = ctx.Sides[n-1]
+    _ = ctx.Qtys[n-1]
+    _ = out[n-1]
+}
+```
+
+  * **The Trick:** Go safely checks if `i < len(slice)` on every array access. This costs CPU cycles.
+  * **The Optimization:** By accessing index `n-1` *before* the loop, the compiler proves that the slice is large enough for the whole loop. It **removes** the safety checks inside the loop, making the assembly code identical to C.
+
+### 4\. Unsafe Pointer Arithmetic (Raw Metal Access)
+
+**File:** `benchmark.go`
+
+The benchmark code explicitly bypasses Go's safety entirely:
+
+```go
+ptrP := (*float64)(unsafe.Pointer(uintptr(unsafe.Pointer(pPrices)) + uintptr(j)*8))
+```
+
+  * **Why:** Standard Go slice indexing (`slice[i]`) includes bounds checks and pointer indirection.
+  * **The Hack:** This code calculates the exact memory address of the float. It eliminates overhead, allowing the Zen 4 CPU to prefetch data efficiently.
+
+### 5\. False Sharing Prevention
+
+**File:** `benchmark.go`
+
+```go
+type benchMetrics struct {
+    rows uint64
+    _    [120]byte // PADDING
+}
+```
+
+  * **The Physics:** Your Ryzen 7900X has multiple cores. If Core 1 writes to `rows` and Core 2 writes to a variable next to it, the CPU cache (L3) "locks" that line, forcing cores to wait for each other.
+  * **The Fix:** The `[120]byte` padding ensures that every `rows` counter sits on its own distinct 64-byte cache line. Cores never fight over the same memory block.
+
+### 6\. Custom Binary Format (GNC3) & Compression
+
+**File:** `common.go` (`inflateGNCToColumns`)
+
+  * **Dictionary Encoding:** Instead of storing repetitive quantities (e.g., 0.001 BTC repeated 1000 times), it stores a small dictionary of unique values and uses `uint32` indices in the data. This compresses memory usage significantly.
+  * **Delta Compression:** It stores `Time` and `Price` as deltas (differences from the previous row) rather than absolute values. Small integers are faster to read/write than full 64-bit integers.
+
+### 7\. Custom "Fast" Parsing
+
+**File:** `data.go`
+
+Instead of using `strconv.ParseFloat` (which is generic and safe), the code uses:
+
+```go
+func fastParseFixed(b []byte) int64 { ... }
+```
+
+  * **Why:** Standard library parsing handles edge cases (NaN, Inf, scientific notation).
+  * **The Speedup:** This function assumes the data is valid CSV. It treats bytes as raw integers, performs zero allocations, and uses bitwise operations. It is likely 5x-10x faster than standard parsing.
+
+### 8\. Manual Loop Unrolling
+
+**File:** `benchmark.go` and `data.go`
+
+```go
+// Processing 4 items manually per iteration
+for j = 0; j < limit; j += 4 {
+    // ... ptrP
+    // ... ptrP+8
+    // ... ptrP+16
+    // ... ptrP+24
+}
+```
+
+  * **Instruction Pipelining:** Modern CPUs can execute multiple instructions at once *if* they are independent. By manually writing out 4 operations, the code forces the CPU pipeline to fill up, reducing the impact of latency.
+
+### Summary
+
+Your previous code was likely **"Logic-Optimized"** (focusing on the math being correct).
+
+This codebase is **"Hardware-Optimized"**. It is written with a specific understanding of how the Ryzen 9 7900X manages memory, caches, and instruction pipelines. It sacrifices code readability and safety for raw speed.

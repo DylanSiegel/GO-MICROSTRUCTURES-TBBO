@@ -1,0 +1,1216 @@
+--- File Tree Structure ---
+|-- check-data.go
+|-- common.go
+|-- data.go
+|-- decoder.go
+|-- encoder.go
+|-- main.go
+|-- math.go
+|-- metrics.go
+|-- test.go
+
+// --- File: check-data.go ---
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"text/tabwriter"
+	"time"
+)
+
+const GapThreshold = 1 * time.Second
+
+func runCheck() {
+	fmt.Println(">>> DATA FORENSICS: QuantDev Binary Check (GNC3) <<<")
+
+	files, _ := filepath.Glob("*.quantdev")
+	if len(files) == 0 {
+		fmt.Println("No .quantdev files found.")
+		return
+	}
+
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	fmt.Fprintln(w, "FILE\tTICKS\tGAP(>1s)\tMAX_GAP\tBAD_PX\tSTATUS")
+	fmt.Fprintln(w, "----\t-----\t--------\t-------\t------\t------")
+
+	for _, path := range files {
+		checkBinaryFile(path, w)
+	}
+	w.Flush()
+}
+
+func checkBinaryFile(path string, w *tabwriter.Writer) {
+	cols, err := LoadQuantDev(path)
+	if err != nil {
+		fmt.Fprintf(w, "%s\tERR\t-\t-\t-\t%v\n", filepath.Base(path), err)
+		return
+	}
+	defer TBBOPool.Put(cols)
+
+	n := cols.Count
+	if n == 0 {
+		fmt.Fprintf(w, "%s\t0\t-\t-\t-\tEMPTY\n", filepath.Base(path))
+		return
+	}
+
+	gaps := 0
+	maxGap := time.Duration(0)
+	badPx := 0
+
+	times := cols.TsEvent
+	prices := cols.Prices
+
+	for i := 1; i < n; i++ {
+		dt := times[i] - times[i-1]
+		dur := time.Duration(dt) * time.Nanosecond
+		if dur > GapThreshold {
+			gaps++
+		}
+		if dur > maxGap {
+			maxGap = dur
+		}
+		if prices[i] <= 0.0001 {
+			badPx++
+		}
+	}
+
+	status := "OK"
+	if gaps > 0 || badPx > 0 {
+		status = "WARN"
+	}
+	fmt.Fprintf(w, "%s\t%d\t%d\t%s\t%d\t%s\n",
+		filepath.Base(path), n, gaps, maxGap.Round(time.Millisecond), badPx, status)
+}
+```
+
+// --- End File: check-data.go ---
+
+// --- File: common.go ---
+
+```go
+package main
+
+import (
+	"sync"
+)
+
+// Global configuration
+const (
+	CPUThreads = 24 // Zen 4 (12C/24T)
+	BaseDir    = "data"
+	PxScale    = 1e-9 // Raw Int64 -> Float conversion
+)
+
+// --- ATOM INDEXING (Zero-Alloc Enum) ---
+type AtomID int
+
+const (
+	AtomSignedVol AtomID = iota
+	AtomTradeSign
+	AtomPriceImpact
+	AtomSignedVelocity
+	AtomWhaleShock
+	AtomPressureAlign
+	AtomQuotedSpread
+	AtomEffectiveSpread
+	AtomInstantAmihud
+	AtomVolImbalance
+	AtomCountImbalance
+	AtomMidPrice
+	AtomMicroPrice
+	AtomMicroDev
+	AtomCentMagnet
+	AtomAvgSzBid
+	AtomAvgSzAsk
+	AtomInterTradeDur
+	AtomCaptureLat
+	AtomSendDelta
+	AtomCount
+)
+
+var AtomNames = [AtomCount]string{
+	"SignedVol", "TradeSign", "PriceImpact", "SignedVelocity", "WhaleShock", "PressureAlign",
+	"QuotedSpread", "EffectiveSpread", "InstantAmihud", "VolImbalance", "CountImbalance",
+	"MidPrice", "MicroPrice", "MicroDev", "CentMagnet", "AvgSzBid", "AvgSzAsk",
+	"InterTradeDur", "CaptureLat", "SendDelta",
+}
+
+// --- THE OPTIMIZED TBBO SCHEMA (SoA) ---
+// Struct-of-Arrays layout maximizes cache locality for analytic workloads.
+type TBBOColumns struct {
+	Count int
+
+	TsEvent   []uint64
+	TsRecv    []uint64
+	TsInDelta []int32
+
+	Prices []float64
+	Sizes  []uint32
+	Sides  []int8
+	Flags  []uint8
+
+	BidPx []float64
+	AskPx []float64
+	BidSz []uint32
+	AskSz []uint32
+	BidCt []uint32
+	AskCt []uint32
+}
+
+func (c *TBBOColumns) Reset() {
+	c.Count = 0
+	c.TsEvent = c.TsEvent[:0]
+	c.TsRecv = c.TsRecv[:0]
+	c.TsInDelta = c.TsInDelta[:0]
+	c.Prices = c.Prices[:0]
+	c.Sizes = c.Sizes[:0]
+	c.Sides = c.Sides[:0]
+	c.Flags = c.Flags[:0]
+	c.BidPx = c.BidPx[:0]
+	c.AskPx = c.AskPx[:0]
+	c.BidSz = c.BidSz[:0]
+	c.AskSz = c.AskSz[:0]
+	c.BidCt = c.BidCt[:0]
+	c.AskCt = c.AskCt[:0]
+}
+
+func (c *TBBOColumns) EnsureCapacity(n int) {
+	if cap(c.Prices) >= n {
+		return
+	}
+	// Helper to reduce repetition and inline checks
+	growF64 := func() []float64 { return make([]float64, 0, n) }
+	growU64 := func() []uint64 { return make([]uint64, 0, n) }
+	growU32 := func() []uint32 { return make([]uint32, 0, n) }
+	growI32 := func() []int32 { return make([]int32, 0, n) }
+	growI8 := func() []int8 { return make([]int8, 0, n) }
+	growU8 := func() []uint8 { return make([]uint8, 0, n) }
+
+	c.TsEvent = growU64()
+	c.TsRecv = growU64()
+	c.TsInDelta = growI32()
+	c.Prices = growF64()
+	c.Sizes = growU32()
+	c.Sides = growI8()
+	c.Flags = growU8()
+	c.BidPx = growF64()
+	c.AskPx = growF64()
+	c.BidSz = growU32()
+	c.AskSz = growU32()
+	c.BidCt = growU32()
+	c.AskCt = growU32()
+}
+
+var TBBOPool = sync.Pool{
+	New: func() any {
+		const cap = 1_000_000
+		return &TBBOColumns{
+			TsEvent:   make([]uint64, 0, cap),
+			TsRecv:    make([]uint64, 0, cap),
+			TsInDelta: make([]int32, 0, cap),
+			Prices:    make([]float64, 0, cap),
+			Sizes:     make([]uint32, 0, cap),
+			Sides:     make([]int8, 0, cap),
+			Flags:     make([]uint8, 0, cap),
+			BidPx:     make([]float64, 0, cap),
+			AskPx:     make([]float64, 0, cap),
+			BidSz:     make([]uint32, 0, cap),
+			AskSz:     make([]uint32, 0, cap),
+			BidCt:     make([]uint32, 0, cap),
+			AskCt:     make([]uint32, 0, cap),
+		}
+	},
+}
+```
+
+// --- End File: common.go ---
+
+// --- File: data.go ---
+
+```go
+package main
+
+import (
+	"encoding/binary"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"strings"
+	"sync"
+)
+
+// DBN Constants
+const (
+	DBNMagic  = "DBN"
+	RTypeTBBO = 1 // Record Type 1 is MBP-0/TBBO
+)
+
+func runData() {
+	fmt.Println(">>> INGESTION: DBN (TBBO) -> QuantDev Binary <<<")
+
+	files, _ := filepath.Glob("*.dbn")
+	if len(files) == 0 {
+		fmt.Println("[warn] No .dbn files found.")
+		return
+	}
+
+	var wg sync.WaitGroup
+	sem := make(chan struct{}, CPUThreads)
+
+	for _, f := range files {
+		wg.Add(1)
+		sem <- struct{}{}
+		go func(path string) {
+			defer wg.Done()
+			defer func() { <-sem }()
+			convertDBNToQuantDev(path)
+		}(f)
+	}
+	wg.Wait()
+}
+
+func convertDBNToQuantDev(path string) {
+	f, err := os.Open(path)
+	if err != nil {
+		fmt.Printf("Err %s: %v\n", path, err)
+		return
+	}
+	defer f.Close()
+
+	outPath := strings.TrimSuffix(path, filepath.Ext(path)) + ".quantdev"
+	fmt.Printf(" -> Converting %s to %s... ", filepath.Base(path), filepath.Base(outPath))
+
+	enc, err := NewEncoder(outPath)
+	if err != nil {
+		return
+	}
+	defer enc.Close()
+
+	// 1. Read Header
+	headerBuf := make([]byte, 8)
+	startOffset := int64(0)
+	if n, _ := f.Read(headerBuf); n == 8 {
+		if string(headerBuf[0:3]) == DBNMagic {
+			metaLen := binary.LittleEndian.Uint32(headerBuf[4:8])
+			startOffset = int64(8 + metaLen)
+		}
+	}
+	f.Seek(startOffset, io.SeekStart)
+
+	// 2. Optimized Streaming Loop
+	const ChunkSize = 64 * 1024 // 64KB Buffer
+	buf := make([]byte, ChunkSize)
+	leftover := make([]byte, 0, 256)
+	count := 0
+
+	for {
+		n, err := f.Read(buf)
+		if n == 0 {
+			break
+		}
+
+		// Combine leftover + new data
+		data := buf[:n]
+		if len(leftover) > 0 {
+			// This alloc is rare (once per chunk boundary)
+			data = append(leftover, buf[:n]...)
+			leftover = leftover[:0]
+		}
+
+		offset := 0
+		lenData := len(data)
+
+		for offset < lenData {
+			if lenData-offset < 1 {
+				leftover = append(leftover, data[offset:]...)
+				break
+			}
+
+			// DBN Spec: Byte 0 is length in 4-byte words
+			lengthWords := int(data[offset])
+			if lengthWords == 0 {
+				offset++
+				continue
+			}
+			recSize := lengthWords * 4
+
+			if lenData-offset < recSize {
+				leftover = append(leftover, data[offset:]...)
+				break
+			}
+
+			// HOT PATH: Parse Record without allocations
+			// We use direct slice indexing which compiles to MOV on amd64
+			rec := data[offset : offset+recSize]
+			offset += recSize
+
+			if rec[1] != RTypeTBBO || recSize != 80 {
+				continue
+			}
+
+			// Field Extraction (Manual LittleEndian)
+			// Go 1.25+ compiler inlines these efficiently.
+			tsEvent := binary.LittleEndian.Uint64(rec[8:16])
+			pRaw := int64(binary.LittleEndian.Uint64(rec[16:24]))
+			size := binary.LittleEndian.Uint32(rec[24:28])
+
+			// Side char logic (Fixed QF1003)
+			// Uses a switch for cleaner jump table generation
+			sideChar := rec[29]
+			var s int8
+			switch sideChar {
+			case 'B':
+				s = 1
+			case 'A':
+				s = -1
+			}
+
+			flags := rec[30]
+			tsRecv := binary.LittleEndian.Uint64(rec[32:40])
+			tsDelta := int32(binary.LittleEndian.Uint32(rec[40:44]))
+
+			// BBO Levels
+			bpRaw := int64(binary.LittleEndian.Uint64(rec[48:56]))
+			apRaw := int64(binary.LittleEndian.Uint64(rec[56:64]))
+			bs := binary.LittleEndian.Uint32(rec[64:68])
+			as := binary.LittleEndian.Uint32(rec[68:72])
+			bc := binary.LittleEndian.Uint32(rec[72:76])
+			ac := binary.LittleEndian.Uint32(rec[76:80])
+
+			// Filter Null Prices (DBN null is MaxInt64)
+			if pRaw == 9223372036854775807 {
+				continue
+			}
+
+			enc.AddRow(tsEvent, tsRecv, tsDelta, pRaw, size, s, flags, bpRaw, apRaw, bs, as, bc, ac)
+			count++
+		}
+
+		if err == io.EOF {
+			break
+		}
+	}
+
+	fmt.Printf("Done (%d rows)\n", count)
+}
+```
+
+// --- End File: data.go ---
+
+// --- File: decoder.go ---
+
+```go
+package main
+
+import (
+	"encoding/binary"
+	"fmt"
+	"io"
+	"os"
+	"unsafe"
+)
+
+// LoadQuantDev loads the binary file using unsafe pointer arithmetic for speed.
+// It bypasses the reflection overhead of encoding/binary.
+func LoadQuantDev(path string) (*TBBOColumns, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+
+	// 1. Read Header
+	header := make([]byte, 64)
+	if _, err := io.ReadFull(f, header); err != nil {
+		return nil, fmt.Errorf("bad header: %v", err)
+	}
+
+	if string(header[0:4]) != MagicGNC {
+		return nil, fmt.Errorf("invalid magic: expected %s, got %s", MagicGNC, string(header[0:4]))
+	}
+
+	totalRows := binary.LittleEndian.Uint64(header[8:16])
+	footerPos := int64(binary.LittleEndian.Uint64(header[24:32]))
+
+	// 2. Prepare Columns
+	cols := TBBOPool.Get().(*TBBOColumns)
+	cols.Reset()
+	cols.EnsureCapacity(int(totalRows))
+
+	// 3. Read Chunks - Optimized with bulk buffering
+	// We read the chunk header, then reading the body is faster if we buffer huge blocks.
+	// However, to keep it simple and robust within existing logic, we read chunk-by-chunk
+	// but use UNSAFE casts to decode.
+
+	f.Seek(64, io.SeekStart)
+	curPos := int64(64)
+
+	// Reusable scratch buffer for the largest chunks to avoid allocs
+	// Max chunk is roughly 8192 rows * 80 bytes ~= 655KB. Safe 1MB buffer.
+	scratch := make([]byte, 1024*1024)
+
+	for curPos < footerPos {
+		// Read Chunk Count (4 bytes)
+		if _, err := io.ReadFull(f, scratch[:4]); err != nil {
+			break
+		}
+		n := int(*(*uint32)(unsafe.Pointer(&scratch[0])))
+
+		// Calculate byte size of this chunk's data
+		// 2 * 8 (u64) + 1 * 4 (i32) + 3 * 8 (px) + 1 * 4 (sz) + 2 * 1 (sd/fl) + ...
+		// We rely on the implicit structure.
+		// Instead of calculating exact bytes, we just ReadFull arrays one by one using the scratch.
+
+		// Helper to read directly into target slice using Unsafe Casts
+		// NOTE: Go 1.25+ 'unsafe.Slice' is zero-cost.
+
+		// TsEvent (uint64)
+		bytesNeeded := n * 8
+		io.ReadFull(f, scratch[:bytesNeeded])
+		srcU64 := unsafe.Slice((*uint64)(unsafe.Pointer(&scratch[0])), n)
+		cols.TsEvent = append(cols.TsEvent, srcU64...)
+
+		// TsRecv (uint64)
+		io.ReadFull(f, scratch[:bytesNeeded])
+		srcU64 = unsafe.Slice((*uint64)(unsafe.Pointer(&scratch[0])), n)
+		cols.TsRecv = append(cols.TsRecv, srcU64...)
+
+		// TsInDelta (int32)
+		bytesNeeded = n * 4
+		io.ReadFull(f, scratch[:bytesNeeded])
+		srcI32 := unsafe.Slice((*int32)(unsafe.Pointer(&scratch[0])), n)
+		cols.TsInDelta = append(cols.TsInDelta, srcI32...)
+
+		// Prices (Stored as Int64, need conversion to Float64)
+		// We read as Int64, then SIMD loop to float.
+		bytesNeeded = n * 8
+		io.ReadFull(f, scratch[:bytesNeeded])
+		srcI64 := unsafe.Slice((*int64)(unsafe.Pointer(&scratch[0])), n)
+		// Manual append loop for conversion
+		start := len(cols.Prices)
+		cols.Prices = cols.Prices[:start+n] // extend slice
+		dstF64 := cols.Prices[start:]
+		for i := 0; i < n; i++ {
+			dstF64[i] = float64(srcI64[i]) * PxScale
+		}
+
+		// Sizes (uint32)
+		bytesNeeded = n * 4
+		io.ReadFull(f, scratch[:bytesNeeded])
+		srcU32 := unsafe.Slice((*uint32)(unsafe.Pointer(&scratch[0])), n)
+		cols.Sizes = append(cols.Sizes, srcU32...)
+
+		// Sides (int8)
+		bytesNeeded = n * 1
+		io.ReadFull(f, scratch[:bytesNeeded])
+		srcI8 := unsafe.Slice((*int8)(unsafe.Pointer(&scratch[0])), n)
+		cols.Sides = append(cols.Sides, srcI8...)
+
+		// Flags (uint8)
+		io.ReadFull(f, scratch[:bytesNeeded])
+		srcU8 := unsafe.Slice((*uint8)(unsafe.Pointer(&scratch[0])), n)
+		cols.Flags = append(cols.Flags, srcU8...)
+
+		// BidPx
+		bytesNeeded = n * 8
+		io.ReadFull(f, scratch[:bytesNeeded])
+		srcI64 = unsafe.Slice((*int64)(unsafe.Pointer(&scratch[0])), n)
+		start = len(cols.BidPx)
+		cols.BidPx = cols.BidPx[:start+n]
+		dstF64 = cols.BidPx[start:]
+		for i := 0; i < n; i++ {
+			dstF64[i] = float64(srcI64[i]) * PxScale
+		}
+
+		// AskPx
+		io.ReadFull(f, scratch[:bytesNeeded])
+		srcI64 = unsafe.Slice((*int64)(unsafe.Pointer(&scratch[0])), n)
+		start = len(cols.AskPx)
+		cols.AskPx = cols.AskPx[:start+n]
+		dstF64 = cols.AskPx[start:]
+		for i := 0; i < n; i++ {
+			dstF64[i] = float64(srcI64[i]) * PxScale
+		}
+
+		// BidSz
+		bytesNeeded = n * 4
+		io.ReadFull(f, scratch[:bytesNeeded])
+		srcU32 = unsafe.Slice((*uint32)(unsafe.Pointer(&scratch[0])), n)
+		cols.BidSz = append(cols.BidSz, srcU32...)
+
+		// AskSz
+		io.ReadFull(f, scratch[:bytesNeeded])
+		srcU32 = unsafe.Slice((*uint32)(unsafe.Pointer(&scratch[0])), n)
+		cols.AskSz = append(cols.AskSz, srcU32...)
+
+		// BidCt
+		io.ReadFull(f, scratch[:bytesNeeded])
+		srcU32 = unsafe.Slice((*uint32)(unsafe.Pointer(&scratch[0])), n)
+		cols.BidCt = append(cols.BidCt, srcU32...)
+
+		// AskCt
+		io.ReadFull(f, scratch[:bytesNeeded])
+		srcU32 = unsafe.Slice((*uint32)(unsafe.Pointer(&scratch[0])), n)
+		cols.AskCt = append(cols.AskCt, srcU32...)
+
+		curPos, _ = f.Seek(0, io.SeekCurrent)
+	}
+
+	cols.Count = len(cols.Prices)
+	return cols, nil
+}
+```
+
+// --- End File: decoder.go ---
+
+// --- File: encoder.go ---
+
+```go
+package main
+
+import (
+	"encoding/binary"
+	"io"
+	"os"
+)
+
+// GNC3 Constants (Version bumped for format change)
+const (
+	MagicGNC  = "GNC3"
+	ChunkSize = 8192 // Power of 2 aligns better with pages
+)
+
+type Encoder struct {
+	// Buffers for fixed-width data
+	tsEvent   []uint64
+	tsRecv    []uint64
+	tsInDelta []int32
+
+	pxBuffer []float64 // Store normalized floats in RAM
+	szBuffer []uint32
+	sdBuffer []int8
+	flBuffer []uint8
+
+	bpBuffer []float64
+	apBuffer []float64
+	bsBuffer []uint32
+	asBuffer []uint32
+	bcBuffer []uint32
+	acBuffer []uint32
+
+	totalRows    uint64
+	chunkOffsets []uint64
+	outFile      *os.File
+}
+
+func NewEncoder(path string) (*Encoder, error) {
+	f, err := os.Create(path)
+	if err != nil {
+		return nil, err
+	}
+	// Reserve header space (64 bytes)
+	if _, err := f.Seek(64, io.SeekStart); err != nil {
+		f.Close()
+		return nil, err
+	}
+
+	return &Encoder{
+		tsEvent:   make([]uint64, 0, ChunkSize),
+		tsRecv:    make([]uint64, 0, ChunkSize),
+		tsInDelta: make([]int32, 0, ChunkSize),
+		pxBuffer:  make([]float64, 0, ChunkSize),
+		szBuffer:  make([]uint32, 0, ChunkSize),
+		sdBuffer:  make([]int8, 0, ChunkSize),
+		flBuffer:  make([]uint8, 0, ChunkSize),
+		bpBuffer:  make([]float64, 0, ChunkSize),
+		apBuffer:  make([]float64, 0, ChunkSize),
+		bsBuffer:  make([]uint32, 0, ChunkSize),
+		asBuffer:  make([]uint32, 0, ChunkSize),
+		bcBuffer:  make([]uint32, 0, ChunkSize),
+		acBuffer:  make([]uint32, 0, ChunkSize),
+		outFile:   f,
+	}, nil
+}
+
+func (e *Encoder) AddRow(tsE, tsR uint64, tsD int32, px int64, sz uint32, side int8, fl uint8, bp, ap int64, bs, as, bc, ac uint32) error {
+	e.tsEvent = append(e.tsEvent, tsE)
+	e.tsRecv = append(e.tsRecv, tsR)
+	e.tsInDelta = append(e.tsInDelta, tsD)
+
+	e.pxBuffer = append(e.pxBuffer, float64(px)*PxScale)
+	e.szBuffer = append(e.szBuffer, sz)
+	e.sdBuffer = append(e.sdBuffer, side)
+	e.flBuffer = append(e.flBuffer, fl)
+
+	e.bpBuffer = append(e.bpBuffer, float64(bp)*PxScale)
+	e.apBuffer = append(e.apBuffer, float64(ap)*PxScale)
+	e.bsBuffer = append(e.bsBuffer, bs)
+	e.asBuffer = append(e.asBuffer, as)
+	e.bcBuffer = append(e.bcBuffer, bc)
+	e.acBuffer = append(e.acBuffer, ac)
+
+	e.totalRows++
+
+	if len(e.tsEvent) >= ChunkSize {
+		return e.flushChunk()
+	}
+	return nil
+}
+
+func (e *Encoder) Close() error {
+	if e.outFile == nil {
+		return nil
+	}
+	defer e.outFile.Close()
+
+	if len(e.tsEvent) > 0 {
+		if err := e.flushChunk(); err != nil {
+			return err
+		}
+	}
+	return e.writeFooter()
+}
+
+func (e *Encoder) flushChunk() error {
+	offset, _ := e.outFile.Seek(0, io.SeekCurrent)
+	e.chunkOffsets = append(e.chunkOffsets, uint64(offset))
+
+	// Write chunk count
+	binary.Write(e.outFile, binary.LittleEndian, uint32(len(e.tsEvent)))
+
+	// RAW BINARY WRITES
+	// NOTE: We convert floats back to int64 for compact disk storage
+
+	binary.Write(e.outFile, binary.LittleEndian, e.tsEvent)
+	binary.Write(e.outFile, binary.LittleEndian, e.tsRecv)
+	binary.Write(e.outFile, binary.LittleEndian, e.tsInDelta)
+
+	writeFloatAsInt64(e.outFile, e.pxBuffer) // Prices
+	binary.Write(e.outFile, binary.LittleEndian, e.szBuffer)
+	binary.Write(e.outFile, binary.LittleEndian, e.sdBuffer)
+	binary.Write(e.outFile, binary.LittleEndian, e.flBuffer)
+
+	writeFloatAsInt64(e.outFile, e.bpBuffer) // BidPx
+	writeFloatAsInt64(e.outFile, e.apBuffer) // AskPx
+	binary.Write(e.outFile, binary.LittleEndian, e.bsBuffer)
+	binary.Write(e.outFile, binary.LittleEndian, e.asBuffer)
+	binary.Write(e.outFile, binary.LittleEndian, e.bcBuffer)
+	binary.Write(e.outFile, binary.LittleEndian, e.acBuffer)
+
+	// Reset buffers
+	e.tsEvent = e.tsEvent[:0]
+	e.tsRecv = e.tsRecv[:0]
+	e.tsInDelta = e.tsInDelta[:0]
+	e.pxBuffer = e.pxBuffer[:0]
+	e.szBuffer = e.szBuffer[:0]
+	e.sdBuffer = e.sdBuffer[:0]
+	e.flBuffer = e.flBuffer[:0]
+	e.bpBuffer = e.bpBuffer[:0]
+	e.apBuffer = e.apBuffer[:0]
+	e.bsBuffer = e.bsBuffer[:0]
+	e.asBuffer = e.asBuffer[:0]
+	e.bcBuffer = e.bcBuffer[:0]
+	e.acBuffer = e.acBuffer[:0]
+
+	return nil
+}
+
+func (e *Encoder) writeFooter() error {
+	footerPos, _ := e.outFile.Seek(0, io.SeekCurrent)
+
+	binary.Write(e.outFile, binary.LittleEndian, uint32(len(e.chunkOffsets)))
+	binary.Write(e.outFile, binary.LittleEndian, e.chunkOffsets)
+
+	// Write Header
+	e.outFile.Seek(0, io.SeekStart)
+	header := make([]byte, 64)
+	copy(header[0:4], MagicGNC)
+	binary.LittleEndian.PutUint64(header[8:16], e.totalRows)
+	// Other header fields can be zeroed or used for versioning
+	binary.LittleEndian.PutUint64(header[24:32], uint64(footerPos))
+	e.outFile.Write(header)
+
+	return nil
+}
+
+// Helper to convert normalized floats back to raw int64 for disk
+func writeFloatAsInt64(w io.Writer, data []float64) {
+	buf := make([]int64, len(data))
+	for i, v := range data {
+		buf[i] = int64(v / PxScale)
+	}
+	binary.Write(w, binary.LittleEndian, buf)
+}
+```
+
+// --- End File: encoder.go ---
+
+// --- File: main.go ---
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+	"runtime"
+	"time"
+)
+
+func main() {
+	runtime.GOMAXPROCS(CPUThreads)
+
+	if len(os.Args) < 2 {
+		printHelp()
+		os.Exit(1)
+	}
+
+	cmd := os.Args[1]
+	start := time.Now()
+
+	switch cmd {
+	case "data":
+		runData()
+	case "test":
+		runTest() // Uses zero-alloc test.go
+	case "check":
+		runCheck()
+
+	default:
+		fmt.Printf("Unknown command: %s\n", cmd)
+		printHelp()
+		os.Exit(1)
+	}
+
+	fmt.Printf("\n[sys] Execution Time: %s\n", time.Since(start))
+}
+
+func printHelp() {
+	fmt.Println("Usage: go run . [command]")
+	fmt.Println("  data   - Ingest .dbn files -> .quantdev (GNC3 format)")
+	fmt.Println("  test   - Compute Atoms & Stats (Parallel)")
+	fmt.Println("  check  - Data Integrity Scan")
+	fmt.Println("  bench  - Hardware Capability Benchmark (Unsafe)")
+}
+```
+
+// --- End File: main.go ---
+
+// --- File: math.go ---
+
+```go
+package main
+
+import (
+	"math"
+	"sync"
+)
+
+// --- ATOM AGGREGATOR (Replaces Workspace) ---
+// Instead of storing 200M floats, we store 20 stat accumulators.
+type AtomAggregator struct {
+	Stats [AtomCount]MetricStats
+}
+
+var AtomAggPool = sync.Pool{
+	New: func() any { return &AtomAggregator{} },
+}
+
+// ComputeAndAggregate runs the FUSED KERNEL.
+// It computes the signal and the stats in a single pass.
+func ComputeAndAggregate(raw *TBBOColumns, agg *AtomAggregator) {
+	n := raw.Count
+	if n < 2 {
+		return
+	}
+
+	// 1. Setup Input Pointers (SoA)
+	p := raw.Prices
+	q := raw.Sizes
+	s := raw.Sides
+	bp := raw.BidPx
+	ap := raw.AskPx
+	bs := raw.BidSz
+	as := raw.AskSz
+	bc := raw.BidCt
+	ac := raw.AskCt
+	tEng := raw.TsEvent
+	tCap := raw.TsRecv
+	dSend := raw.TsInDelta
+
+	// 2. Pre-calculate Target (Future Log Return)
+	// We optimize this by only allocating ONE vector for the target,
+	// rather than 20 vectors for signals.
+	// Optimization: Stack allocate this if 'n' was small, but 'n' is large.
+	// We use a pooled slice for the target to prevent allocs in the loop.
+	targets := GetTargetBuffer(n)
+	defer PutTargetBuffer(targets)
+
+	// Compute Target: Log(Mid_t+1 / Mid_t)
+	for i := 0; i < n-1; i++ {
+		m1 := (ap[i] + bp[i]) * 0.5
+		m2 := (ap[i+1] + bp[i+1]) * 0.5
+		if m1 > 1e-8 && m2 > 1e-8 {
+			targets[i] = math.Log(m2 / m1)
+		} else {
+			targets[i] = math.NaN() // Skip invalid
+		}
+	}
+	// Last element has no future
+	targets[n-1] = math.NaN()
+
+	// 3. THE HOT LOOP (Fused)
+	// Iterate once, compute all atoms, update stats immediately.
+	// Variables pinned to registers.
+
+	var prevP float64 = p[0]
+	var prevT uint64 = tEng[0]
+	const epsilon = 1e-9
+
+	// Direct access to stats array to avoid bounds checks in loop
+	stats := &agg.Stats
+
+	for i := 0; i < n-1; i++ {
+		// Load common data into registers
+		target := targets[i]
+		if math.IsNaN(target) {
+			prevP = p[i]
+			prevT = tEng[i]
+			continue
+		}
+
+		curP := p[i]
+		curQ := float64(q[i])
+		curS := float64(s[i])
+		curBP := bp[i]
+		curAP := ap[i]
+		curTEng := tEng[i]
+
+		// --- ATOM CALCULATIONS & UPDATE ---
+
+		// 1. Signed Vol
+		stats[AtomSignedVol].UpdateInline(curQ*curS, target)
+
+		// 2. Trade Sign
+		stats[AtomTradeSign].UpdateInline(curS, target)
+
+		// 3. Price Impact
+		stats[AtomPriceImpact].UpdateInline(curP-prevP, target)
+
+		// 4. Velocity & 18. Duration
+		dt := curTEng - prevT
+		if dt == 0 {
+			dt = 1
+		}
+		dtF := float64(dt)
+		stats[AtomSignedVelocity].UpdateInline((curQ*curS)/dtF, target)
+		stats[AtomInterTradeDur].UpdateInline(dtF, target)
+
+		// 5. Whale Shock
+		liq := float64(bs[i] + as[i])
+		val := 0.0
+		if curQ > liq {
+			val = 1.0
+		}
+		stats[AtomWhaleShock].UpdateInline(val, target)
+
+		// 6. Pressure Align & 10. Vol Imbalance
+		curBS := float64(bs[i])
+		curAS := float64(as[i])
+		imbal := (curBS - curAS) / (curBS + curAS + epsilon)
+		stats[AtomPressureAlign].UpdateInline(curS*imbal, target)
+		stats[AtomVolImbalance].UpdateInline(imbal, target)
+
+		// 7. Quoted Spread
+		stats[AtomQuotedSpread].UpdateInline(curAP-curBP, target)
+
+		// 8. Effective Spread & 12. Mid
+		mid := (curAP + curBP) * 0.5
+		stats[AtomEffectiveSpread].UpdateInline(curS*(curP-mid), target)
+		stats[AtomMidPrice].UpdateInline(mid, target)
+
+		// 9. Instant Amihud
+		absRet := math.Abs(curP - prevP)
+		qSafe := curQ
+		if qSafe < 1 {
+			qSafe = 1
+		}
+		stats[AtomInstantAmihud].UpdateInline(absRet/qSafe, target)
+
+		// 11. Count Imbalance
+		cImbal := (float64(bc[i]) - float64(ac[i])) / (float64(bc[i]) + float64(ac[i]) + epsilon)
+		stats[AtomCountImbalance].UpdateInline(cImbal, target)
+
+		// 13. Micro Price & 14. Dev
+		micro := (curBP*curAS + curAP*curBS) / (curAS + curBS + epsilon)
+		stats[AtomMicroPrice].UpdateInline(micro, target)
+		stats[AtomMicroDev].UpdateInline(curS*(curP-micro), target)
+
+		// 15. Cent Magnet
+		_, frac := math.Modf(curP)
+		dist := math.Min(frac, 1.0-frac)
+		stats[AtomCentMagnet].UpdateInline(1.0/(1.0+100.0*dist), target)
+
+		// 16/17 Avg Sz
+		stats[AtomAvgSzBid].UpdateInline(curBS/math.Max(1.0, float64(bc[i])), target)
+		stats[AtomAvgSzAsk].UpdateInline(curAS/math.Max(1.0, float64(ac[i])), target)
+
+		// 19. Latency
+		stats[AtomCaptureLat].UpdateInline(float64(tCap[i]-curTEng), target)
+
+		// 20. Send Delta
+		stats[AtomSendDelta].UpdateInline(float64(dSend[i]), target)
+
+		// Shift State
+		prevP = curP
+		prevT = curTEng
+	}
+
+	// Finalize local stats
+	for i := 0; i < int(AtomCount); i++ {
+		agg.Stats[i].Finalize()
+	}
+}
+
+// -- Helpers for Target Buffer Pooling --
+var targetPool = sync.Pool{
+	New: func() any { return make([]float64, 0, 100000) },
+}
+
+func GetTargetBuffer(n int) []float64 {
+	s := targetPool.Get().([]float64)
+	if cap(s) < n {
+		return make([]float64, n)
+	}
+	return s[:n]
+}
+func PutTargetBuffer(s []float64) {
+	targetPool.Put(s)
+}
+```
+
+// --- End File: math.go ---
+
+// --- File: metrics.go ---
+
+```go
+package main
+
+import (
+	"math"
+)
+
+type MetricStats struct {
+	Count     int
+	ICPearson float64
+	Sharpe    float64
+	HitRate   float64
+
+	// Internal accumulators
+	sumProd   float64
+	sumSig    float64
+	sumRet    float64
+	sumSqSig  float64
+	sumSqRet  float64
+	sumPnL    float64
+	sumSqPnL  float64
+	hits      float64
+	validHits float64
+}
+
+// UpdateInline is designed for Fused Loops (Kernel Fusion).
+// It updates the stats for a single data point immediately.
+// 's' = signal, 'r' = return (target)
+func (m *MetricStats) UpdateInline(s, r float64) {
+	if math.IsNaN(s) || math.IsNaN(r) {
+		return
+	}
+
+	m.Count++
+	m.sumSig += s
+	m.sumRet += r
+	m.sumSqSig += s * s
+	m.sumSqRet += r * r
+	m.sumProd += s * r
+
+	pnl := s * r
+	m.sumPnL += pnl
+	m.sumSqPnL += pnl * pnl
+
+	if s != 0 && r != 0 {
+		m.validHits++
+		if (s > 0 && r > 0) || (s < 0 && r < 0) {
+			m.hits++
+		}
+	}
+}
+
+func (m *MetricStats) Add(other MetricStats) {
+	m.Count += other.Count
+	m.sumProd += other.sumProd
+	m.sumSig += other.sumSig
+	m.sumRet += other.sumRet
+	m.sumSqSig += other.sumSqSig
+	m.sumSqRet += other.sumSqRet
+	m.sumPnL += other.sumPnL
+	m.sumSqPnL += other.sumSqPnL
+	m.hits += other.hits
+	m.validHits += other.validHits
+	m.Finalize()
+}
+
+func (m *MetricStats) Finalize() {
+	n := float64(m.Count)
+	if n < 2 {
+		return
+	}
+
+	// Pearson Correlation
+	num := n*m.sumProd - m.sumSig*m.sumRet
+	denX := n*m.sumSqSig - m.sumSig*m.sumSig
+	denY := n*m.sumSqRet - m.sumRet*m.sumRet
+
+	if denX > 0 && denY > 0 {
+		m.ICPearson = num / math.Sqrt(denX*denY)
+	} else {
+		m.ICPearson = 0
+	}
+
+	// Sharpe Ratio
+	meanPnL := m.sumPnL / n
+	varPnL := (m.sumSqPnL / n) - (meanPnL * meanPnL)
+	if varPnL > 0 {
+		m.Sharpe = meanPnL / math.Sqrt(varPnL)
+	} else {
+		m.Sharpe = 0
+	}
+
+	if m.validHits > 0 {
+		m.HitRate = m.hits / m.validHits
+	}
+}
+
+// ComputeStats is the legacy bulk method (kept for compatibility if needed)
+func ComputeStats(sig, ret []float64) MetricStats {
+	n := len(sig)
+	if n != len(ret) {
+		if len(ret) < n {
+			n = len(ret)
+		}
+	}
+	ms := MetricStats{Count: n}
+	for i := 0; i < n; i++ {
+		ms.UpdateInline(sig[i], ret[i])
+	}
+	ms.Finalize()
+	return ms
+}
+```
+
+// --- End File: metrics.go ---
+
+// --- File: test.go ---
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+	"path/filepath"
+	"sync"
+	"text/tabwriter"
+	"time"
+)
+
+func runTest() {
+	start := time.Now()
+	fmt.Println(">>> UNIFIED STUDY: 20-Atom TBBO Alpha Validation (FUSED KERNEL) <<<")
+
+	files, _ := filepath.Glob("*.quantdev")
+	if len(files) == 0 {
+		fmt.Println("[fatal] No .quantdev files found.")
+		return
+	}
+
+	fmt.Printf("[config] Processing %d files with %d threads (GOGC=%s)...\n",
+		len(files), CPUThreads, os.Getenv("GOGC"))
+
+	// Global Aggregator (Fixed Array)
+	globalStats := make([]MetricStats, AtomCount)
+	var globalMu sync.Mutex
+
+	var wg sync.WaitGroup
+	sem := make(chan struct{}, CPUThreads)
+
+	for _, path := range files {
+		wg.Add(1)
+		sem <- struct{}{}
+
+		go func(p string) {
+			defer wg.Done()
+			defer func() { <-sem }()
+
+			// 1. Load Data (Now optimized with Unsafe/Copy)
+			cols, err := LoadQuantDev(p)
+			if err != nil {
+				return
+			}
+
+			// 2. Fused Compute & Aggregation
+			// We no longer allocate huge AtomWorkspaces.
+			// We get a small Aggregator struct.
+			agg := AtomAggPool.Get().(*AtomAggregator)
+			// Clear previous stats
+			for i := range agg.Stats {
+				agg.Stats[i] = MetricStats{}
+			}
+
+			ComputeAndAggregate(cols, agg)
+
+			// Done with raw data immediately
+			TBBOPool.Put(cols)
+
+			// 3. Merge to Global
+			globalMu.Lock()
+			for id := 0; id < int(AtomCount); id++ {
+				globalStats[id].Add(agg.Stats[id])
+			}
+			globalMu.Unlock()
+
+			// Return aggregator
+			AtomAggPool.Put(agg)
+
+			fmt.Printf(".")
+		}(path)
+	}
+	wg.Wait()
+	fmt.Println(" Done.")
+
+	printReport(globalStats, time.Since(start))
+}
+
+func printReport(stats []MetricStats, dur time.Duration) {
+	fmt.Println("\n=== 20-ATOM PERFORMANCE REPORT ===")
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	fmt.Fprintln(w, "ATOM\tCOUNT\tIC (NextTick)\tSHARPE\tHIT RATE")
+	fmt.Fprintln(w, "----\t-----\t-------------\t------\t--------")
+
+	for i := 0; i < int(AtomCount); i++ {
+		s := stats[i]
+		name := AtomNames[i]
+		fmt.Fprintf(w, "%s\t%d\t%.4f\t%.4f\t%.2f%%\n",
+			name, s.Count, s.ICPearson, s.Sharpe, s.HitRate*100)
+	}
+	w.Flush()
+	fmt.Printf("\nTotal Time: %s\n", dur)
+}
+```
+
+// --- End File: test.go ---
+
