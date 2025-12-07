@@ -1,3 +1,213 @@
+PS Z:\go-tbbo> go run . test
+>>> MICROSTRUCTURE SIGNAL PERFORMANCE (PURE ALPHA MODE) <<<
+...
+
+
+===========================================================================================================
+ ASSET: MES
+===========================================================================================================
+
+>> Alpha_DecayedOrderCountFlow15_45s <<
+HZ  TRADES   IC     RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --     ------- ---- --    ---   ------ ---- ---  ---- ------ ---  ---  --------             ------- ------- -------
+10s 93463772 -0.012 -0.001  50.3 0.002 0.007 0.01   43.2 0.98 1.69 34     -0.0 -0.0 1.0878/1.0871/0.0007 280     280     0.00
+20s 93463772 -0.017 -0.012  49.4 0.002 0.003 0.01   44.9 0.98 1.17 42     -0.0 -0.0 1.0519/1.0505/0.0013 307     307     0.00
+30s 93463772 -0.032 -0.041  48.1 0.003 0.005 0.00   45.6 0.96 0.94 56     -0.0 -0.0 1.0312/1.0290/0.0022 287     287     0.00
+
+>> Alpha_IBKR2025Combo <<
+HZ  TRADES   IC     RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --     ------- ---- --    ---   ------ ---- ---  ---- ------ ---  ---  --------             ------- ------- -------
+10s 93463772 -0.001 0.015   51.0 0.005 0.013 0.01   43.7 0.95 1.16 11     -0.0 -0.0 1.0878/1.0863/0.0015 368     368     0.00
+20s 93463772 -0.000 0.017   51.2 0.003 0.007 0.01   45.4 0.94 0.53 18     -0.0 -0.0 1.0519/1.0496/0.0023 389     389     0.00
+30s 93463772 0.004  0.012   50.9 0.004 0.007 0.01   46.1 0.98 0.21 42     -0.0 -0.0 1.0312/1.0292/0.0019 367     367     0.00
+
+>> Alpha_ImpactAdjTradeImbalance <<
+HZ  TRADES   IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --    ------- ---- --    ---   ------ ---- ---  ---- ------ ---  ---  --------             ------- ------- -------
+10s 89314697 0.046 0.099   52.1 0.001 0.003 0.02   44.8 0.99 0.19 4      -0.0 -0.0 1.0878/1.0796/0.0082 479     479     0.00
+20s 89314697 0.035 0.076   51.6 0.001 0.003 0.01   46.3 0.99 0.24 5      -0.0 -0.0 1.0519/1.0472/0.0047 474     474     0.00
+30s 89314697 0.034 0.071   51.6 0.001 0.002 0.01   47.0 0.99 0.29 7      -0.0 -0.0 1.0312/1.0275/0.0037 471     471     0.00
+
+>> Alpha_IntertradeIntensity <<
+HZ  TRADES   IC     RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --     ------- ---- --    ---   ------ ---- ---  ---- ------ ---  ---  --------             ------- ------- -------
+10s 93463772 -0.026 -0.001  50.4 0.006 0.016 0.01   43.4 0.97 1.49 25     -0.0 -0.0 1.0878/1.0841/0.0037 314     314     0.00
+20s 93463772 -0.025 -0.021  49.7 0.006 0.012 0.01   45.1 1.01 1.12 31     -0.0 -0.0 1.0519/1.0463/0.0055 366     366     0.00
+30s 93463772 -0.036 -0.036  49.0 0.010 0.018 0.01   45.8 1.00 0.94 44     -0.0 -0.0 1.0312/1.0259/0.0053 341     341     0.00
+
+>> Alpha_LiquidityVacuumContinuation <<
+HZ  TRADES   IC     RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --     ------- ---- --    ---   ------ ---- ---  ---- ------ ---  ---  --------             ------- ------- -------
+10s 93463668 -0.000 0.009   50.8 0.002 0.006 0.01   44.2 0.99 1.01 94     -0.0 -0.0 1.0878/1.0871/0.0007 389     389     0.00
+20s 93463668 -0.000 -0.004  49.9 0.003 0.007 0.01   45.8 1.02 1.15 185    -0.0 -0.0 1.0519/1.0516/0.0003 407     407     0.00
+30s 93463668 0.019  0.012   50.7 0.002 0.004 0.01   46.5 1.03 0.59 256    -0.0 -0.0 1.0312/1.0307/0.0005 370     370     0.00
+
+>> Alpha_MicropriceSkew <<
+HZ  TRADES   IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW  MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --    ------- ---- --    ---   ------ ---- ---  ----  ------ ---  ---  --------             ------- ------- -------
+10s 93463772 0.196 0.213   62.0 0.003 0.008 0.04   48.0 1.01 -0.19 26     -0.0 -0.0 1.0878/1.0596/0.0282 1302    1302    0.00
+20s 93463772 0.142 0.155   58.0 0.003 0.006 0.03   48.6 1.03 -0.38 50     -0.0 -0.0 1.0519/1.0373/0.0146 1293    1293    0.00
+30s 93463772 0.125 0.137   57.4 0.004 0.007 0.02   48.9 1.02 -0.62 77     -0.0 -0.0 1.0312/1.0189/0.0123 1277    1277    0.00
+
+>> Alpha_SignedOrderFlowMomentum <<
+HZ  TRADES   IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --    ------- ---- --    ---   ------ ---- ---  ---- ------ ---  ---  --------             ------- ------- -------
+10s 93463772 0.016 0.015   51.0 0.003 0.010 0.01   43.6 0.97 1.07 15     -0.0 -0.0 1.0878/1.0859/0.0019 351     351     0.00
+20s 93463772 0.011 0.012   51.0 0.003 0.007 0.01   45.2 1.00 0.86 16     -0.0 -0.0 1.0519/1.0495/0.0023 362     362     0.00
+30s 93463772 0.002 0.004   51.0 0.004 0.008 0.01   46.0 0.98 0.75 20     -0.0 -0.0 1.0312/1.0284/0.0028 370     370     0.00
+
+>> Alpha_SpreadRecoveryFadeFollow <<
+HZ  TRADES   IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW  MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --    ------- ---- --    ---   ------ ---- ---  ----  ------ ---  ---  --------             ------- ------- -------
+10s 93463724 0.018 -0.019  51.0 0.000 0.000 -0.00  43.5 1.01 -0.37 67     -0.0 -0.0 1.0878/1.0875/0.0003 -24     -24     -0.00
+20s 93463724 0.028 -0.012  52.8 0.001 0.001 -0.00  45.4 0.97 -0.89 115    -0.0 -0.0 1.0519/1.0505/0.0014 -63     -63     -0.00
+30s 93463724 0.052 -0.001  53.4 0.000 0.001 -0.00  46.3 1.01 -0.93 143    -0.0 -0.0 1.0312/1.0293/0.0019 -42     -42     -0.00
+
+>> Alpha_StaleTradeDirection <<
+HZ  TRADES   IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW  MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --    ------- ---- --    ---   ------ ---- ---  ----  ------ ---  ---  --------             ------- ------- -------
+10s 34174003 0.059 0.087   56.9 0.006 0.016 0.05   44.6 0.97 0.23  0      -0.0 -0.0 1.0878/1.0749/0.0129 327     327     0.00
+20s 34174003 0.043 0.076   55.4 0.006 0.013 0.03   46.1 0.97 0.06  0      -0.0 -0.0 1.0519/1.0405/0.0114 325     325     0.00
+30s 34174003 0.037 0.063   54.4 0.008 0.014 0.03   46.8 0.99 -0.00 1      -0.0 -0.0 1.0312/1.0229/0.0083 323     323     0.00
+
+===========================================================================================================
+ ASSET: MGC
+===========================================================================================================
+
+>> Alpha_DecayedOrderCountFlow15_45s <<
+HZ  TRADES   IC     RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW   MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --     ------- ---- --    ---   ------ ---- ---  ----   ------ ---  ---  --------             ------- ------- -------
+10s 31981177 -0.024 -0.005  50.0 0.002 0.017 0.00   48.0 0.93 0.76   57     -0.0 -0.0 0.9265/0.9260/0.0006 138     138     0.00
+20s 31981177 -0.026 -0.011  49.6 0.001 0.005 0.00   48.3 0.97 204.55 57     -0.0 -0.0 0.8821/0.8815/0.0005 124     124     0.00
+30s 31981177 -0.023 -0.012  49.4 0.001 0.003 0.00   48.3 0.99 125.51 99     -0.0 -0.0 0.8619/0.8615/0.0004 114     114     0.00
+
+>> Alpha_IBKR2025Combo <<
+HZ  TRADES   IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW     MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --    ------- ---- --    ---   ------ ---- ---  ----     ------ ---  ---  --------             ------- ------- -------
+10s 31981177 0.001 0.020   50.8 0.002 0.016 -0.00  48.1 0.96 -1782.14 130    -0.0 -0.0 0.9265/0.9258/0.0008 -11     -11     -0.00
+20s 31981177 0.000 0.015   50.3 0.002 0.006 -0.00  48.5 0.98 -1294.16 257    -0.0 -0.0 0.8821/0.8816/0.0005 -173    -173    -0.00
+30s 31981177 0.011 0.023   50.7 0.001 0.002 -0.00  48.6 1.01 -928.23  513    -0.0 -0.0 0.8619/0.8614/0.0005 -446    -446    -0.00
+
+>> Alpha_ImpactAdjTradeImbalance <<
+HZ  TRADES   IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW    MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --    ------- ---- --    ---   ------ ---- ---  ----    ------ ---  ---  --------             ------- ------- -------
+10s 28619958 0.106 0.136   56.5 0.001 0.012 0.00   51.6 1.07 -942.73 56     -0.0 -0.0 0.9265/0.9173/0.0093 380     380     0.00
+20s 28619958 0.081 0.094   54.5 0.002 0.006 0.00   51.2 1.06 -685.41 113    -0.0 -0.0 0.8821/0.8776/0.0045 307     307     0.00
+30s 28619958 0.068 0.077   53.9 0.002 0.004 0.00   51.0 1.04 -197.39 113    -0.0 -0.0 0.8619/0.8587/0.0032 331     331     0.00
+
+>> Alpha_IntertradeIntensity <<
+HZ  TRADES   IC     RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW    MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --     ------- ---- --    ---   ------ ---- ---  ----    ------ ---  ---  --------             ------- ------- -------
+10s 31981177 -0.083 -0.025  49.5 0.009 0.081 0.00   47.9 0.94 1781.56 7      -0.0 -0.0 0.9265/0.9239/0.0026 256     256     0.00
+20s 31981177 -0.076 -0.039  49.0 0.008 0.028 0.00   48.2 0.95 1293.94 24     -0.0 -0.0 0.8821/0.8787/0.0034 326     326     0.00
+30s 31981177 -0.067 -0.035  49.0 0.007 0.016 0.00   48.3 0.97 877.98  35     -0.0 -0.0 0.8619/0.8582/0.0037 516     516     0.00
+
+>> Alpha_LiquidityVacuumContinuation <<
+HZ  TRADES   IC     RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW   MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --     ------- ---- --    ---   ------ ---- ---  ----   ------ ---  ---  --------             ------- ------- -------
+10s 31977745 -0.011 0.018   50.3 0.004 0.033 0.00   47.7 0.96 711.52 39     -0.0 -0.0 0.9265/0.9249/0.0016 79      79      0.00
+20s 31977745 0.009  0.023   50.6 0.003 0.010 0.00   48.4 0.96 884.79 59     -0.0 -0.0 0.8821/0.8803/0.0018 174     174     0.00
+30s 31977745 0.014  0.019   50.5 0.002 0.004 0.00   48.6 0.96 777.40 81     -0.0 -0.0 0.8619/0.8600/0.0019 411     411     0.00
+
+>> Alpha_MicropriceSkew <<
+HZ  TRADES   IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW    MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --    ------- ---- --    ---   ------ ---- ---  ----    ------ ---  ---  --------             ------- ------- -------
+10s 31981177 0.073 0.102   54.8 0.002 0.015 0.00   49.9 1.01 -356.92 42     -0.0 -0.0 0.9265/0.9194/0.0072 198     198     0.00
+20s 31981177 0.057 0.072   53.6 0.002 0.007 0.00   49.9 1.02 -476.90 85     -0.0 -0.0 0.8821/0.8780/0.0041 117     117     0.00
+30s 31981177 0.045 0.059   53.0 0.002 0.004 0.00   49.9 1.02 -175.69 99     -0.0 -0.0 0.8619/0.8592/0.0027 106     106     0.00
+
+>> Alpha_SignedOrderFlowMomentum <<
+HZ  TRADES   IC     RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW     MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --     ------- ---- --    ---   ------ ---- ---  ----     ------ ---  ---  --------             ------- ------- -------
+10s 31981177 -0.001 0.006   50.4 0.003 0.029 0.00   48.1 0.97 -1420.18 127    -0.0 -0.0 0.9265/0.9259/0.0007 34      34      0.00
+20s 31981177 -0.011 -0.008  49.8 0.004 0.013 -0.00  48.4 0.99 -1155.77 255    -0.0 -0.0 0.8821/0.8815/0.0005 -138    -138    -0.00
+30s 31981177 -0.003 -0.005  49.6 0.003 0.007 -0.00  48.5 1.01 -877.24  511    -0.0 -0.0 0.8619/0.8607/0.0012 -424    -424    -0.00
+
+>> Alpha_SpreadRecoveryFadeFollow <<
+HZ  TRADES   IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW     MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --    ------- ---- --    ---   ------ ---- ---  ----     ------ ---  ---  --------             ------- ------- -------
+10s 31981134 0.045 0.025   51.5 0.001 0.008 -0.00  47.6 1.09 -1782.13 176    -0.0 -0.0 0.9265/0.9255/0.0010 -169    -169    -0.00
+20s 31981134 0.047 0.026   51.9 0.001 0.005 -0.00  48.4 1.07 -1294.16 295    -0.0 -0.0 0.8821/0.8804/0.0017 -273    -273    -0.00
+30s 31981134 0.059 0.038   52.4 0.002 0.004 -0.00  48.9 1.08 -928.23  543    -0.0 -0.0 0.8619/0.8588/0.0031 -501    -501    -0.00
+
+>> Alpha_StaleTradeDirection <<
+HZ  TRADES   IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW    MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --    ------- ---- --    ---   ------ ---- ---  ----    ------ ---  ---  --------             ------- ------- -------
+10s 17651528 0.078 0.111   57.4 0.004 0.033 0.00   51.6 1.06 -776.81 57     -0.0 -0.0 0.9265/0.9182/0.0084 184     184     0.00
+20s 17651528 0.061 0.082   55.2 0.004 0.016 0.00   51.2 1.05 -393.68 71     -0.0 -0.0 0.8821/0.8779/0.0042 165     165     0.00
+30s 17651528 0.050 0.065   54.0 0.004 0.009 0.00   50.9 1.04 -190.20 85     -0.0 -0.0 0.8619/0.8590/0.0029 162     162     0.00
+
+===========================================================================================================
+ ASSET: MNQ
+===========================================================================================================
+
+>> Alpha_DecayedOrderCountFlow15_45s <<
+HZ  TRADES    IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------    --    ------- ---- --    ---   ------ ---- ---  ---- ------ ---  ---  --------             ------- ------- -------
+10s 199159447 0.052 0.063   52.6 0.002 0.005 0.01   48.8 1.07 1.05 25     -0.0 -0.0 0.8006/0.7988/0.0018 569     569     0.00
+20s 199159447 0.037 0.032   51.3 0.003 0.008 0.01   49.0 1.10 0.85 48     -0.0 -0.0 0.7742/0.7734/0.0008 494     494     0.00
+30s 199159447 0.013 0.002   50.2 0.002 0.003 0.00   49.1 1.07 0.54 55     -0.0 -0.0 0.7637/0.7634/0.0003 425     425     0.00
+
+>> Alpha_IBKR2025Combo <<
+HZ  TRADES    IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------    --    ------- ---- --    ---   ------ ---- ---  ---- ------ ---  ---  --------             ------- ------- -------
+10s 199159447 0.049 0.050   52.3 0.003 0.010 0.01   49.0 1.02 0.70 22     -0.0 -0.0 0.8006/0.7987/0.0019 584     584     0.00
+20s 199159447 0.046 0.022   50.6 0.005 0.013 0.01   49.2 1.06 0.53 29     -0.0 -0.0 0.7742/0.7731/0.0011 533     533     0.00
+30s 199159447 0.021 -0.011  49.8 0.005 0.010 0.00   49.3 1.02 0.27 31     -0.0 -0.0 0.7637/0.7625/0.0012 428     428     0.00
+
+>> Alpha_ImpactAdjTradeImbalance <<
+HZ  TRADES    IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------    --    ------- ---- --    ---   ------ ---- ---  ---- ------ ---  ---  --------             ------- ------- -------
+10s 176696535 0.067 0.083   53.9 0.001 0.002 0.02   50.9 1.04 0.35 2      -0.0 -0.0 0.8006/0.7973/0.0033 1379    1379    0.00
+20s 176696535 0.050 0.063   52.9 0.001 0.002 0.02   50.7 1.03 0.30 2      -0.0 -0.0 0.7742/0.7724/0.0018 1394    1394    0.00
+30s 176696535 0.034 0.048   52.4 0.001 0.001 0.01   50.6 1.05 0.25 3      -0.0 -0.0 0.7637/0.7625/0.0012 1408    1408    0.00
+
+>> Alpha_IntertradeIntensity <<
+HZ  TRADES    IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------    --    ------- ---- --    ---   ------ ---- ---  ---- ------ ---  ---  --------             ------- ------- -------
+10s 199159447 0.081 0.076   52.9 0.007 0.022 0.01   48.7 1.07 1.00 30     -0.0 -0.0 0.8006/0.7975/0.0031 485     485     0.00
+20s 199159447 0.068 0.040   51.3 0.012 0.029 0.00   48.9 1.11 0.87 45     -0.0 -0.0 0.7742/0.7724/0.0018 446     446     0.00
+30s 199159447 0.035 0.001   49.8 0.008 0.016 0.00   49.1 1.08 0.61 54     -0.0 -0.0 0.7637/0.7621/0.0016 406     406     0.00
+
+>> Alpha_LiquidityVacuumContinuation <<
+HZ  TRADES    IC     RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW  MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------    --     ------- ---- --    ---   ------ ---- ---  ----  ------ ---  ---  --------             ------- ------- -------
+10s 199152858 -0.005 0.037   50.5 0.003 0.008 0.00   49.1 1.09 -0.23 188    -0.0 -0.0 0.8006/0.8003/0.0003 66      66      0.00
+20s 199152858 -0.004 0.036   50.3 0.004 0.010 0.00   49.4 1.09 0.06  336    -0.0 -0.0 0.7742/0.7736/0.0006 68      68      0.00
+30s 199152858 0.002  0.046   50.5 0.005 0.009 0.00   49.5 1.10 0.19  515    -0.0 -0.0 0.7637/0.7633/0.0004 27      27      0.00
+
+>> Alpha_MicropriceSkew <<
+HZ  TRADES    IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW  MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------    --    ------- ---- --    ---   ------ ---- ---  ----  ------ ---  ---  --------             ------- ------- -------
+10s 199159447 0.029 0.036   51.5 0.000 0.001 0.01   49.9 1.05 0.01  34     -0.0 -0.0 0.8006/0.7996/0.0010 547     547     0.00
+20s 199159447 0.024 0.029   50.9 0.000 0.001 0.01   49.9 1.05 -0.05 66     -0.0 -0.0 0.7742/0.7735/0.0007 548     548     0.00
+30s 199159447 0.024 0.027   51.0 0.001 0.001 0.00   49.9 1.05 -0.12 101    -0.0 -0.0 0.7637/0.7631/0.0006 558     558     0.00
+
+>> Alpha_SignedOrderFlowMomentum <<
+HZ  TRADES    IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------    --    ------- ---- --    ---   ------ ---- ---  ---- ------ ---  ---  --------             ------- ------- -------
+10s 199159447 0.072 0.069   52.7 0.002 0.005 0.01   49.0 1.09 0.79 13     -0.0 -0.0 0.8006/0.7985/0.0021 589     589     0.00
+20s 199159447 0.057 0.047   51.5 0.003 0.009 0.01   49.2 1.13 0.69 30     -0.0 -0.0 0.7742/0.7729/0.0013 558     558     0.00
+30s 199159447 0.026 0.018   50.3 0.002 0.004 0.00   49.3 1.10 0.49 30     -0.0 -0.0 0.7637/0.7622/0.0014 519     519     0.00
+
+>> Alpha_SpreadRecoveryFadeFollow <<
+HZ  TRADES    IC     RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW  MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------    --     ------- ---- --    ---   ------ ---- ---  ----  ------ ---  ---  --------             ------- ------- -------
+10s 199159359 -0.021 -0.014  49.4 0.000 0.000 -0.00  49.2 0.97 -0.43 114    -0.0 -0.0 0.8006/0.8005/0.0001 -56     -56     -0.00
+20s 199159359 -0.006 -0.007  49.7 0.000 0.001 -0.00  49.5 1.00 -0.52 177    -0.0 -0.0 0.7742/0.7741/0.0001 -91     -91     -0.00
+30s 199159359 0.001  0.006   49.8 0.001 0.002 -0.00  49.6 1.01 -0.59 253    -0.0 -0.0 0.7637/0.7637/0.0000 -195    -195    -0.00
+
+>> Alpha_StaleTradeDirection <<
+HZ  TRADES   IC    RANK_IC HIT% MI    NMI   SHARPE WIN% W/L  SKEW MAX_DD P05  P01  ΔLOGLOSS             MARKOUT NET_PNL AVG_NET
+--  ------   --    ------- ---- --    ---   ------ ---- ---  ---- ------ ---  ---  --------             ------- ------- -------
+10s 54145322 0.037 0.062   53.6 0.010 0.033 0.03   50.7 1.04 0.17 0      -0.0 -0.0 0.8006/0.7976/0.0030 332     332     0.00
+20s 54145322 0.024 0.044   52.5 0.013 0.033 0.02   50.5 1.00 0.12 0      -0.0 -0.0 0.7742/0.7722/0.0020 328     328     0.00
+30s 54145322 0.019 0.042   52.0 0.014 0.025 0.02   50.4 1.00 0.11 1      -0.0 -0.0 0.7637/0.7620/0.0016 328     328     0.00
+[sys] Execution Time: 2m32.5128736s
+
+[sys] Time: 2m32.5138772s
+PS Z:\go-tbbo> 
+
 --- File Tree Structure ---
 |-- check-data.go
 |-- common.go
@@ -22,10 +232,15 @@ import (
 	"time"
 )
 
-const GapThreshold = 1 * time.Second
+const (
+	GapThreshold     = 1 * time.Second  // base threshold
+	BigIntradayGap   = 60 * time.Second // > 60s within session
+	MarketClosureCut = 12 * time.Hour   // anything above is treated as closure
+	WarnBigGapFrac   = 0.01             // 1% of ticks have >60s gap → WARN
+)
 
 func runCheck() {
-	fmt.Println(">>> DATA FORENSICS: QuantDev Binary Check (GNC3) <<<")
+	fmt.Println(">>> DATA FORENSICS: QuantDev Binary Check (Smart TBBO) <<<")
 
 	files, _ := filepath.Glob("*.quantdev")
 	if len(files) == 0 {
@@ -34,8 +249,8 @@ func runCheck() {
 	}
 
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "FILE\tTICKS\tGAP(>1s)\tMAX_GAP\tBAD_PX\tSTATUS")
-	fmt.Fprintln(w, "----\t-----\t--------\t-------\t------\t------")
+	fmt.Fprintln(w, "FILE\tTICKS\tGAP>1s%\tGAP>60s%\tMAX_GAP\tBAD_PX\tSTATUS")
+	fmt.Fprintln(w, "----\t-----\t--------\t---------\t-------\t------\t------")
 
 	for _, path := range files {
 		checkBinaryFile(path, w)
@@ -46,44 +261,76 @@ func runCheck() {
 func checkBinaryFile(path string, w *tabwriter.Writer) {
 	cols, err := LoadQuantDev(path)
 	if err != nil {
-		fmt.Fprintf(w, "%s\tERR\t-\t-\t-\t%v\n", filepath.Base(path), err)
+		fmt.Fprintf(w, "%s\tERR\t-\t-\t-\t-\t%v\n", filepath.Base(path), err)
 		return
 	}
 	defer TBBOPool.Put(cols)
 
 	n := cols.Count
 	if n == 0 {
-		fmt.Fprintf(w, "%s\t0\t-\t-\t-\tEMPTY\n", filepath.Base(path))
+		fmt.Fprintf(w, "%s\t0\t-\t-\t-\t-\tEMPTY\n", filepath.Base(path))
 		return
 	}
 
-	gaps := 0
-	maxGap := time.Duration(0)
-	badPx := 0
+	var (
+		gaps1s  int
+		gaps60s int
+		badPx   int
+		maxGap  time.Duration
+	)
 
 	times := cols.TsEvent
 	prices := cols.Prices
+	flags := cols.Flags
 
 	for i := 1; i < n; i++ {
+		if flags[i]&BadTsRecvFlag != 0 {
+			continue
+		}
+
 		dt := times[i] - times[i-1]
 		dur := time.Duration(dt) * time.Nanosecond
-		if dur > GapThreshold {
-			gaps++
-		}
+
 		if dur > maxGap {
 			maxGap = dur
 		}
+
+		// Treat very large gaps as market closures – do not count them
+		if dur > MarketClosureCut {
+			continue
+		}
+
+		if dur > GapThreshold {
+			gaps1s++
+		}
+		if dur > BigIntradayGap {
+			gaps60s++
+		}
+
 		if prices[i] <= 0.0001 {
 			badPx++
 		}
 	}
 
+	frac1s := float64(gaps1s) / float64(n) * 100.0
+	frac60s := float64(gaps60s) / float64(n) * 100.0
+
 	status := "OK"
-	if gaps > 0 || badPx > 0 {
+	if badPx > 0 || frac60s > WarnBigGapFrac*100.0 {
 		status = "WARN"
 	}
-	fmt.Fprintf(w, "%s\t%d\t%d\t%s\t%d\t%s\n",
-		filepath.Base(path), n, gaps, maxGap.Round(time.Millisecond), badPx, status)
+
+	fmt.Fprintf(
+		w,
+		"%s\t%d\t%.3f\t%.3f\t%s\t%d\t%s\n",
+		filepath.Base(path),
+		n,
+		frac1s,
+		frac60s,
+		maxGap.Round(time.Millisecond),
+		badPx,
+		status,
+	)
 }
 ```
 
@@ -96,80 +343,150 @@ package main
 
 import (
 	"sync"
+	"unsafe"
 )
-
-// Global configuration
-const (
-	CPUThreads = 24 // Zen 4 (12C/24T)
-	BaseDir    = "data"
-	PxScale    = 1e-9 // Raw Int64 -> Float conversion
-)
-
-// --- ATOM INDEXING (Zero-Alloc Enum) ---
-type AtomID int
 
 const (
-	AtomSignedVol AtomID = iota
-	AtomTradeSign
-	AtomPriceImpact
-	AtomSignedVelocity
-	AtomWhaleShock
-	AtomPressureAlign
-	AtomQuotedSpread
-	AtomEffectiveSpread
-	AtomInstantAmihud
-	AtomVolImbalance
-	AtomCountImbalance
-	AtomMidPrice
-	AtomMicroPrice
-	AtomMicroDev
-	AtomCentMagnet
-	AtomAvgSzBid
-	AtomAvgSzAsk
-	AtomInterTradeDur
-	AtomCaptureLat
-	AtomSendDelta
-	AtomCount
+	// Compute-heavy parallelism (pure CPU work)
+	CPUThreads = 24
+
+	// Disk I/O parallelism (streaming DBN -> quantdev)
+	// 4–8 tends to be near-optimal for NVMe; tune if needed.
+	IOThreads = 8
+
+	// Memory-heavy backtest parallelism (runTest)
+	TestMaxParallel = 4
+
+	PxScale = 1e-9
 )
 
-var AtomNames = [AtomCount]string{
-	"SignedVol", "TradeSign", "PriceImpact", "SignedVelocity", "WhaleShock", "PressureAlign",
-	"QuotedSpread", "EffectiveSpread", "InstantAmihud", "VolImbalance", "CountImbalance",
-	"MidPrice", "MicroPrice", "MicroDev", "CentMagnet", "AvgSzBid", "AvgSzAsk",
-	"InterTradeDur", "CaptureLat", "SendDelta",
+// --- CONFIGURATION ---
+const (
+	// Physics
+	Epsilon     = 1e-9
+	MaxLookback = 50
+
+	// Simulation
+	BaseLatencyNS = 15_000_000 // 15ms
+	MaxJitterNS   = 10_000_000 // 10ms
+)
+
+// --- HORIZONS: 10s / 20s / 30s ONLY ---
+
+type HorizonID int
+
+const (
+	Hz10s HorizonID = iota
+	Hz20s
+	Hz30s
+	HzCount
+)
+
+var HorizonDurations = [HzCount]uint64{
+	10_000_000_000, // 10s
+	20_000_000_000, // 20s
+	30_000_000_000, // 30s
 }
 
-// --- THE OPTIMIZED TBBO SCHEMA (SoA) ---
-// Struct-of-Arrays layout maximizes cache locality for analytic workloads.
+var HorizonNames = [HzCount]string{"10s", "20s", "30s"}
+
+// Flags bitfield (matches DBN FlagSet raw bits as of DBN v2)
+const (
+	LastFlag          = 1 << 0 // "end of event" / record is last for that event
+	SnapshotFlag      = 1 << 1
+	MbpFlag           = 1 << 2
+	TobFlag           = 1 << 3
+	PublisherSpecFlag = 1 << 4
+	BadTsRecvFlag     = 1 << 5
+	MaybeBadBookFlag  = 1 << 6
+	// bit 7 currently reserved
+)
+
+// --- THE 20 ATOMS (PHYSICS STATE) ---
+type Atoms struct {
+	// Flow
+	SignedVol      float64
+	TradeSign      int8
+	PriceImpact    float64
+	SignedVelocity float64
+	WhaleShock     float64
+	PressureAlign  float64
+
+	// Friction
+	QuotedSpread    float64
+	EffectiveSpread float64
+	InstantAmihud   float64
+	VolImbalance    float64
+	CountImbalance  float64
+
+	// Value
+	MidPrice   float64
+	MicroPrice float64
+	MicroDev   float64
+	CentMagnet float64
+	AvgSzBid   float64
+	AvgSzAsk   float64
+
+	// Time / latency
+	InterTradeDur uint64
+	CaptureLat    int64
+	SendDelta     int32
+
+	// Ghost Liquidity
+	RealBidSz float64
+	RealAskSz float64
+}
+
+// --- DATA LAYOUT (Struct of Arrays) ---
+// This captures the full TBBO semantics from Databento's MBP-1-on-trade schema.
 type TBBOColumns struct {
 	Count int
 
+	// Identity / routing
+	PublisherID  []uint16
+	InstrumentID []uint32
+
+	// Timing
 	TsEvent   []uint64
 	TsRecv    []uint64
 	TsInDelta []int32
 
-	Prices []float64
-	Sizes  []uint32
-	Sides  []int8
-	Flags  []uint8
+	// Event
+	Prices    []float64 // trade/update price
+	Sizes     []float64 // order quantity
+	Sides     []int8    // -1 = Aggressive sell, +1 = Aggressive buy, 0 = None/unknown
+	Actions   []int8    // 'T', 'A', 'C', 'M', 'R', 'N', ...
+	Flags     []uint8   // DBN FlagSet raw bits
+	Depth     []uint8   // TBBO depth field (book level updated)
+	Sequences []uint32  // venue message sequence
 
-	BidPx []float64
-	AskPx []float64
-	BidSz []uint32
-	AskSz []uint32
-	BidCt []uint32
-	AskCt []uint32
+	// Top of book snapshot (post-event)
+	BidPx []float64 // best bid price
+	AskPx []float64 // best ask price
+	BidSz []float64 // best bid size
+	AskSz []float64 // best ask size
+	BidCt []uint32  // best bid order count
+	AskCt []uint32  // best ask order count
 }
 
 func (c *TBBOColumns) Reset() {
 	c.Count = 0
+
+	c.PublisherID = c.PublisherID[:0]
+	c.InstrumentID = c.InstrumentID[:0]
+
 	c.TsEvent = c.TsEvent[:0]
 	c.TsRecv = c.TsRecv[:0]
 	c.TsInDelta = c.TsInDelta[:0]
+
 	c.Prices = c.Prices[:0]
 	c.Sizes = c.Sizes[:0]
 	c.Sides = c.Sides[:0]
+	c.Actions = c.Actions[:0]
 	c.Flags = c.Flags[:0]
+	c.Depth = c.Depth[:0]
+	c.Sequences = c.Sequences[:0]
+
 	c.BidPx = c.BidPx[:0]
 	c.AskPx = c.AskPx[:0]
 	c.BidSz = c.BidSz[:0]
@@ -178,52 +495,59 @@ func (c *TBBOColumns) Reset() {
 	c.AskCt = c.AskCt[:0]
 }
 
+// Still useful for non-decoder paths if you ever have them.
 func (c *TBBOColumns) EnsureCapacity(n int) {
-	if cap(c.Prices) >= n {
-		return
-	}
-	// Helper to reduce repetition and inline checks
-	growF64 := func() []float64 { return make([]float64, 0, n) }
-	growU64 := func() []uint64 { return make([]uint64, 0, n) }
-	growU32 := func() []uint32 { return make([]uint32, 0, n) }
-	growI32 := func() []int32 { return make([]int32, 0, n) }
-	growI8 := func() []int8 { return make([]int8, 0, n) }
-	growU8 := func() []uint8 { return make([]uint8, 0, n) }
+	if cap(c.TsEvent) < n {
+		// Identity
+		c.PublisherID = make([]uint16, 0, n)
+		c.InstrumentID = make([]uint32, 0, n)
 
-	c.TsEvent = growU64()
-	c.TsRecv = growU64()
-	c.TsInDelta = growI32()
-	c.Prices = growF64()
-	c.Sizes = growU32()
-	c.Sides = growI8()
-	c.Flags = growU8()
-	c.BidPx = growF64()
-	c.AskPx = growF64()
-	c.BidSz = growU32()
-	c.AskSz = growU32()
-	c.BidCt = growU32()
-	c.AskCt = growU32()
+		// Timing
+		c.TsEvent = make([]uint64, 0, n)
+		c.TsRecv = make([]uint64, 0, n)
+		c.TsInDelta = make([]int32, 0, n)
+
+		// Event
+		c.Prices = make([]float64, 0, n)
+		c.Sizes = make([]float64, 0, n)
+		c.Sides = make([]int8, 0, n)
+		c.Actions = make([]int8, 0, n)
+		c.Flags = make([]uint8, 0, n)
+		c.Depth = make([]uint8, 0, n)
+		c.Sequences = make([]uint32, 0, n)
+
+		// BBO
+		c.BidPx = make([]float64, 0, n)
+		c.AskPx = make([]float64, 0, n)
+		c.BidSz = make([]float64, 0, n)
+		c.AskSz = make([]float64, 0, n)
+		c.BidCt = make([]uint32, 0, n)
+		c.AskCt = make([]uint32, 0, n)
+	}
 }
 
-var TBBOPool = sync.Pool{
-	New: func() any {
-		const cap = 1_000_000
-		return &TBBOColumns{
-			TsEvent:   make([]uint64, 0, cap),
-			TsRecv:    make([]uint64, 0, cap),
-			TsInDelta: make([]int32, 0, cap),
-			Prices:    make([]float64, 0, cap),
-			Sizes:     make([]uint32, 0, cap),
-			Sides:     make([]int8, 0, cap),
-			Flags:     make([]uint8, 0, cap),
-			BidPx:     make([]float64, 0, cap),
-			AskPx:     make([]float64, 0, cap),
-			BidSz:     make([]uint32, 0, cap),
-			AskSz:     make([]uint32, 0, cap),
-			BidCt:     make([]uint32, 0, cap),
-			AskCt:     make([]uint32, 0, cap),
-		}
-	},
+var TBBOPool = sync.Pool{New: func() any { return &TBBOColumns{} }}
+
+// -----------------------------------------------------------------------------
+// Shared unsafe helper: convert any slice to []byte without extra alloc.
+// Used by encoder.go and decoder.go.
+// -----------------------------------------------------------------------------
+func asBytes[T any](s []T) []byte {
+	if len(s) == 0 {
+		return nil
+	}
+	sizeInBytes := len(s) * int(unsafe.Sizeof(s[0]))
+	return unsafe.Slice((*byte)(unsafe.Pointer(&s[0])), sizeInBytes)
+}
+
+// -----------------------------------------------------------------------------
+// resize: reuse existing backing arrays when possible (critical for sync.Pool).
+// -----------------------------------------------------------------------------
+func resize[T any](s []T, n int) []T {
+	if cap(s) < n {
+		return make([]T, n)
+	}
+	return s[:n]
 }
 ```
 
@@ -244,10 +568,9 @@ import (
 	"sync"
 )
 
-// DBN Constants
 const (
 	DBNMagic  = "DBN"
-	RTypeTBBO = 1 // Record Type 1 is MBP-0/TBBO
+	RTypeTBBO = 1 // TBBO is MBP-1-on-trade in Databento's schema; rtype==1 for MBP-1/TBBO
 )
 
 func runData() {
@@ -260,7 +583,9 @@ func runData() {
 	}
 
 	var wg sync.WaitGroup
-	sem := make(chan struct{}, CPUThreads)
+	// Use I/O-specific concurrency instead of full CPUThreads to avoid
+	// thrashing the filesystem and NVMe queue.
+	sem := make(chan struct{}, IOThreads)
 
 	for _, f := range files {
 		wg.Add(1)
@@ -283,15 +608,16 @@ func convertDBNToQuantDev(path string) {
 	defer f.Close()
 
 	outPath := strings.TrimSuffix(path, filepath.Ext(path)) + ".quantdev"
-	fmt.Printf(" -> Converting %s to %s... ", filepath.Base(path), filepath.Base(outPath))
+	fmt.Printf(" -> Converting %s...\n", filepath.Base(path))
 
 	enc, err := NewEncoder(outPath)
 	if err != nil {
+		fmt.Printf("encoder init failed %s: %v\n", outPath, err)
 		return
 	}
 	defer enc.Close()
 
-	// 1. Read Header
+	// 1. Read Header (DBN metadata prefix)
 	headerBuf := make([]byte, 8)
 	startOffset := int64(0)
 	if n, _ := f.Read(headerBuf); n == 8 {
@@ -302,9 +628,9 @@ func convertDBNToQuantDev(path string) {
 	}
 	f.Seek(startOffset, io.SeekStart)
 
-	// 2. Optimized Streaming Loop
-	const ChunkSize = 64 * 1024 // 64KB Buffer
-	buf := make([]byte, ChunkSize)
+	// 2. Streaming Loop
+	const BufSize = 64 * 1024
+	buf := make([]byte, BufSize)
 	leftover := make([]byte, 0, 256)
 	count := 0
 
@@ -314,10 +640,8 @@ func convertDBNToQuantDev(path string) {
 			break
 		}
 
-		// Combine leftover + new data
 		data := buf[:n]
 		if len(leftover) > 0 {
-			// This alloc is rare (once per chunk boundary)
 			data = append(leftover, buf[:n]...)
 			leftover = leftover[:0]
 		}
@@ -331,7 +655,6 @@ func convertDBNToQuantDev(path string) {
 				break
 			}
 
-			// DBN Spec: Byte 0 is length in 4-byte words
 			lengthWords := int(data[offset])
 			if lengthWords == 0 {
 				offset++
@@ -344,37 +667,65 @@ func convertDBNToQuantDev(path string) {
 				break
 			}
 
-			// HOT PATH: Parse Record without allocations
-			// We use direct slice indexing which compiles to MOV on amd64
 			rec := data[offset : offset+recSize]
 			offset += recSize
 
-			if rec[1] != RTypeTBBO || recSize != 80 {
+			// rtype at byte 1
+			if rec[1] != RTypeTBBO {
 				continue
 			}
 
-			// Field Extraction (Manual LittleEndian)
-			// Go 1.25+ compiler inlines these efficiently.
+			// Header area:
+			// [0]  len (u8)
+			// [1]  rtype (u8)
+			// [2:4] publisher_id (u16 LE)
+			// [4:8] instrument_id (u32 LE)
+			// [8:16] ts_event (u64 LE)
+
+			pubID := binary.LittleEndian.Uint16(rec[2:4])
+			instrID := binary.LittleEndian.Uint32(rec[4:8])
 			tsEvent := binary.LittleEndian.Uint64(rec[8:16])
+
+			// Body:
+			// [16:24] price (i64 fixed-9)
+			// [24:28] size (u32)
+			// [28]    action (char)
+			// [29]    side (char: 'B','A','N')
+			// [30]    flags (u8)
+			// [31]    depth (u8)
+			// [32:40] ts_recv (u64)
+			// [40:44] ts_in_delta (i32)
+			// [44:48] sequence (u32)
+			// [48:56] bid_px_00 (i64)
+			// [56:64] ask_px_00 (i64)
+			// [64:68] bid_sz_00 (u32)
+			// [68:72] ask_sz_00 (u32)
+			// [72:76] bid_ct_00 (u32)
+			// [76:80] ask_ct_00 (u32)
+
 			pRaw := int64(binary.LittleEndian.Uint64(rec[16:24]))
 			size := binary.LittleEndian.Uint32(rec[24:28])
-
-			// Side char logic (Fixed QF1003)
-			// Uses a switch for cleaner jump table generation
+			actionChar := int8(rec[28])
 			sideChar := rec[29]
+			flags := rec[30]
+			depth := rec[31]
+
 			var s int8
 			switch sideChar {
 			case 'B':
 				s = 1
 			case 'A':
 				s = -1
+			case 'N':
+				s = 0
+			default:
+				s = 0
 			}
 
-			flags := rec[30]
 			tsRecv := binary.LittleEndian.Uint64(rec[32:40])
 			tsDelta := int32(binary.LittleEndian.Uint32(rec[40:44]))
+			seq := binary.LittleEndian.Uint32(rec[44:48])
 
-			// BBO Levels
 			bpRaw := int64(binary.LittleEndian.Uint64(rec[48:56]))
 			apRaw := int64(binary.LittleEndian.Uint64(rec[56:64]))
 			bs := binary.LittleEndian.Uint32(rec[64:68])
@@ -382,12 +733,31 @@ func convertDBNToQuantDev(path string) {
 			bc := binary.LittleEndian.Uint32(rec[72:76])
 			ac := binary.LittleEndian.Uint32(rec[76:80])
 
-			// Filter Null Prices (DBN null is MaxInt64)
+			// Skip Null/placeholder prices (Databento uses i64::MAX as sentinel)
 			if pRaw == 9223372036854775807 {
 				continue
 			}
 
-			enc.AddRow(tsEvent, tsRecv, tsDelta, pRaw, size, s, flags, bpRaw, apRaw, bs, as, bc, ac)
+			_ = enc.AddRow(
+				pubID,
+				instrID,
+				tsEvent,
+				tsRecv,
+				tsDelta,
+				pRaw,
+				size,
+				s,
+				actionChar,
+				flags,
+				depth,
+				seq,
+				bpRaw,
+				apRaw,
+				bs,
+				as,
+				bc,
+				ac,
+			)
 			count++
 		}
 
@@ -396,7 +766,9 @@ func convertDBNToQuantDev(path string) {
 		}
 	}
 
-	fmt.Printf("Done (%d rows)\n", count)
+	if count == 0 {
+		fmt.Printf("   [warn] no TBBO records written for %s\n", filepath.Base(path))
+	}
 }
 ```
 
@@ -412,157 +784,237 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"unsafe"
+	"sync"
+	"weak" // Go 1.24+ feature
 )
 
-// LoadQuantDev loads the binary file using unsafe pointer arithmetic for speed.
-// It bypasses the reflection overhead of encoding/binary.
+var (
+	sharedCacheMu sync.Mutex
+	// Use weak.Pointer to allow GC to reclaim cache if pressure is high
+	sharedCache = make(map[string]weak.Pointer[TBBOColumns])
+)
+
+func LoadQuantDevShared(path string) (*TBBOColumns, error) {
+	sharedCacheMu.Lock()
+	defer sharedCacheMu.Unlock()
+
+	if wp, ok := sharedCache[path]; ok {
+		if ptr := wp.Value(); ptr != nil {
+			return ptr, nil
+		}
+		delete(sharedCache, path) // GC collected it
+	}
+
+	cols := &TBBOColumns{}
+	if err := loadFromFile(path, cols); err != nil {
+		return nil, err
+	}
+	sharedCache[path] = weak.Make(cols)
+	return cols, nil
+}
+
 func LoadQuantDev(path string) (*TBBOColumns, error) {
+	cols := TBBOPool.Get().(*TBBOColumns)
+	if err := loadFromFile(path, cols); err != nil {
+		TBBOPool.Put(cols)
+		return nil, err
+	}
+	return cols, nil
+}
+
+// readFullInto reads exactly len(buf) elements of type T into buf.
+func readFullInto[T any](r io.Reader, buf []T) error {
+	if len(buf) == 0 {
+		return nil
+	}
+	_, err := io.ReadFull(r, asBytes(buf))
+	return err
+}
+
+func loadFromFile(path string, cols *TBBOColumns) error {
 	f, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer f.Close()
 
-	// 1. Read Header
 	header := make([]byte, 64)
 	if _, err := io.ReadFull(f, header); err != nil {
-		return nil, fmt.Errorf("bad header: %v", err)
+		return fmt.Errorf("bad header: %w", err)
 	}
 
 	if string(header[0:4]) != MagicGNC {
-		return nil, fmt.Errorf("invalid magic: expected %s, got %s", MagicGNC, string(header[0:4]))
+		return fmt.Errorf("unsupported quantdev magic %q (expected %q); re-run data conversion",
+			header[0:4], MagicGNC)
 	}
 
 	totalRows := binary.LittleEndian.Uint64(header[8:16])
-	footerPos := int64(binary.LittleEndian.Uint64(header[24:32]))
+	// footerPos := binary.LittleEndian.Uint64(header[24:32]) // currently unused
 
-	// 2. Prepare Columns
-	cols := TBBOPool.Get().(*TBBOColumns)
+	// Defensive: avoid overflowing int on weird files.
+	maxInt := uint64(^uint(0) >> 1)
+	if totalRows > maxInt {
+		return fmt.Errorf("quantdev file too large: %d rows", totalRows)
+	}
+	nRows := int(totalRows)
+
 	cols.Reset()
-	cols.EnsureCapacity(int(totalRows))
 
-	// 3. Read Chunks - Optimized with bulk buffering
-	// We read the chunk header, then reading the body is faster if we buffer huge blocks.
-	// However, to keep it simple and robust within existing logic, we read chunk-by-chunk
-	// but use UNSAFE casts to decode.
+	// -------------------------------------------------------------------------
+	// Critical change: reuse pooled backing arrays instead of allocating fresh.
+	// -------------------------------------------------------------------------
+	if nRows > 0 {
+		cols.PublisherID = resize(cols.PublisherID, nRows)
+		cols.InstrumentID = resize(cols.InstrumentID, nRows)
 
-	f.Seek(64, io.SeekStart)
-	curPos := int64(64)
+		cols.TsEvent = resize(cols.TsEvent, nRows)
+		cols.TsRecv = resize(cols.TsRecv, nRows)
+		cols.TsInDelta = resize(cols.TsInDelta, nRows)
 
-	// Reusable scratch buffer for the largest chunks to avoid allocs
-	// Max chunk is roughly 8192 rows * 80 bytes ~= 655KB. Safe 1MB buffer.
-	scratch := make([]byte, 1024*1024)
+		cols.Prices = resize(cols.Prices, nRows)
+		cols.Sizes = resize(cols.Sizes, nRows)
+		cols.Sides = resize(cols.Sides, nRows)
+		cols.Actions = resize(cols.Actions, nRows)
+		cols.Flags = resize(cols.Flags, nRows)
+		cols.Depth = resize(cols.Depth, nRows)
+		cols.Sequences = resize(cols.Sequences, nRows)
 
-	for curPos < footerPos {
-		// Read Chunk Count (4 bytes)
-		if _, err := io.ReadFull(f, scratch[:4]); err != nil {
-			break
-		}
-		n := int(*(*uint32)(unsafe.Pointer(&scratch[0])))
-
-		// Calculate byte size of this chunk's data
-		// 2 * 8 (u64) + 1 * 4 (i32) + 3 * 8 (px) + 1 * 4 (sz) + 2 * 1 (sd/fl) + ...
-		// We rely on the implicit structure.
-		// Instead of calculating exact bytes, we just ReadFull arrays one by one using the scratch.
-
-		// Helper to read directly into target slice using Unsafe Casts
-		// NOTE: Go 1.25+ 'unsafe.Slice' is zero-cost.
-
-		// TsEvent (uint64)
-		bytesNeeded := n * 8
-		io.ReadFull(f, scratch[:bytesNeeded])
-		srcU64 := unsafe.Slice((*uint64)(unsafe.Pointer(&scratch[0])), n)
-		cols.TsEvent = append(cols.TsEvent, srcU64...)
-
-		// TsRecv (uint64)
-		io.ReadFull(f, scratch[:bytesNeeded])
-		srcU64 = unsafe.Slice((*uint64)(unsafe.Pointer(&scratch[0])), n)
-		cols.TsRecv = append(cols.TsRecv, srcU64...)
-
-		// TsInDelta (int32)
-		bytesNeeded = n * 4
-		io.ReadFull(f, scratch[:bytesNeeded])
-		srcI32 := unsafe.Slice((*int32)(unsafe.Pointer(&scratch[0])), n)
-		cols.TsInDelta = append(cols.TsInDelta, srcI32...)
-
-		// Prices (Stored as Int64, need conversion to Float64)
-		// We read as Int64, then SIMD loop to float.
-		bytesNeeded = n * 8
-		io.ReadFull(f, scratch[:bytesNeeded])
-		srcI64 := unsafe.Slice((*int64)(unsafe.Pointer(&scratch[0])), n)
-		// Manual append loop for conversion
-		start := len(cols.Prices)
-		cols.Prices = cols.Prices[:start+n] // extend slice
-		dstF64 := cols.Prices[start:]
-		for i := 0; i < n; i++ {
-			dstF64[i] = float64(srcI64[i]) * PxScale
-		}
-
-		// Sizes (uint32)
-		bytesNeeded = n * 4
-		io.ReadFull(f, scratch[:bytesNeeded])
-		srcU32 := unsafe.Slice((*uint32)(unsafe.Pointer(&scratch[0])), n)
-		cols.Sizes = append(cols.Sizes, srcU32...)
-
-		// Sides (int8)
-		bytesNeeded = n * 1
-		io.ReadFull(f, scratch[:bytesNeeded])
-		srcI8 := unsafe.Slice((*int8)(unsafe.Pointer(&scratch[0])), n)
-		cols.Sides = append(cols.Sides, srcI8...)
-
-		// Flags (uint8)
-		io.ReadFull(f, scratch[:bytesNeeded])
-		srcU8 := unsafe.Slice((*uint8)(unsafe.Pointer(&scratch[0])), n)
-		cols.Flags = append(cols.Flags, srcU8...)
-
-		// BidPx
-		bytesNeeded = n * 8
-		io.ReadFull(f, scratch[:bytesNeeded])
-		srcI64 = unsafe.Slice((*int64)(unsafe.Pointer(&scratch[0])), n)
-		start = len(cols.BidPx)
-		cols.BidPx = cols.BidPx[:start+n]
-		dstF64 = cols.BidPx[start:]
-		for i := 0; i < n; i++ {
-			dstF64[i] = float64(srcI64[i]) * PxScale
-		}
-
-		// AskPx
-		io.ReadFull(f, scratch[:bytesNeeded])
-		srcI64 = unsafe.Slice((*int64)(unsafe.Pointer(&scratch[0])), n)
-		start = len(cols.AskPx)
-		cols.AskPx = cols.AskPx[:start+n]
-		dstF64 = cols.AskPx[start:]
-		for i := 0; i < n; i++ {
-			dstF64[i] = float64(srcI64[i]) * PxScale
-		}
-
-		// BidSz
-		bytesNeeded = n * 4
-		io.ReadFull(f, scratch[:bytesNeeded])
-		srcU32 = unsafe.Slice((*uint32)(unsafe.Pointer(&scratch[0])), n)
-		cols.BidSz = append(cols.BidSz, srcU32...)
-
-		// AskSz
-		io.ReadFull(f, scratch[:bytesNeeded])
-		srcU32 = unsafe.Slice((*uint32)(unsafe.Pointer(&scratch[0])), n)
-		cols.AskSz = append(cols.AskSz, srcU32...)
-
-		// BidCt
-		io.ReadFull(f, scratch[:bytesNeeded])
-		srcU32 = unsafe.Slice((*uint32)(unsafe.Pointer(&scratch[0])), n)
-		cols.BidCt = append(cols.BidCt, srcU32...)
-
-		// AskCt
-		io.ReadFull(f, scratch[:bytesNeeded])
-		srcU32 = unsafe.Slice((*uint32)(unsafe.Pointer(&scratch[0])), n)
-		cols.AskCt = append(cols.AskCt, srcU32...)
-
-		curPos, _ = f.Seek(0, io.SeekCurrent)
+		cols.BidPx = resize(cols.BidPx, nRows)
+		cols.AskPx = resize(cols.AskPx, nRows)
+		cols.BidSz = resize(cols.BidSz, nRows)
+		cols.AskSz = resize(cols.AskSz, nRows)
+		cols.BidCt = resize(cols.BidCt, nRows)
+		cols.AskCt = resize(cols.AskCt, nRows)
+	} else {
+		// Ensure zero-length slices if file is empty.
+		cols.PublisherID = cols.PublisherID[:0]
+		cols.InstrumentID = cols.InstrumentID[:0]
+		cols.TsEvent = cols.TsEvent[:0]
+		cols.TsRecv = cols.TsRecv[:0]
+		cols.TsInDelta = cols.TsInDelta[:0]
+		cols.Prices = cols.Prices[:0]
+		cols.Sizes = cols.Sizes[:0]
+		cols.Sides = cols.Sides[:0]
+		cols.Actions = cols.Actions[:0]
+		cols.Flags = cols.Flags[:0]
+		cols.Depth = cols.Depth[:0]
+		cols.Sequences = cols.Sequences[:0]
+		cols.BidPx = cols.BidPx[:0]
+		cols.AskPx = cols.AskPx[:0]
+		cols.BidSz = cols.BidSz[:0]
+		cols.AskSz = cols.AskSz[:0]
+		cols.BidCt = cols.BidCt[:0]
+		cols.AskCt = cols.AskCt[:0]
 	}
 
-	cols.Count = len(cols.Prices)
-	return cols, nil
+	// After header, all chunks are laid out as:
+	// [u32 n][columns for n rows...], repeated, then footer index.
+	if _, err := f.Seek(64, io.SeekStart); err != nil {
+		return err
+	}
+
+	var lenBuf [4]byte
+	pos := 0
+
+	for pos < nRows {
+		if _, err := io.ReadFull(f, lenBuf[:]); err != nil {
+			return fmt.Errorf("reading chunk length: %w", err)
+		}
+		n := int(binary.LittleEndian.Uint32(lenBuf[:]))
+		if n == 0 {
+			continue
+		}
+		if pos+n > nRows {
+			return fmt.Errorf("corrupt chunk length: pos=%d, n=%d, total=%d", pos, n, nRows)
+		}
+
+		// Window for this chunk
+		i0, i1 := pos, pos+n
+
+		// Order must match encoder.go
+
+		// 1. Event TS
+		if err := readFullInto(f, cols.TsEvent[i0:i1]); err != nil {
+			return err
+		}
+		// 2. Recv TS
+		if err := readFullInto(f, cols.TsRecv[i0:i1]); err != nil {
+			return err
+		}
+		// 3. Delta
+		if err := readFullInto(f, cols.TsInDelta[i0:i1]); err != nil {
+			return err
+		}
+		// 4. Prices (float64)
+		if err := readFullInto(f, cols.Prices[i0:i1]); err != nil {
+			return err
+		}
+		// 5. Sizes (float64)
+		if err := readFullInto(f, cols.Sizes[i0:i1]); err != nil {
+			return err
+		}
+		// 6. Side (int8)
+		if err := readFullInto(f, cols.Sides[i0:i1]); err != nil {
+			return err
+		}
+		// 7. Action (int8)
+		if err := readFullInto(f, cols.Actions[i0:i1]); err != nil {
+			return err
+		}
+		// 8. Flags (u8)
+		if err := readFullInto(f, cols.Flags[i0:i1]); err != nil {
+			return err
+		}
+		// 9. Depth (u8)
+		if err := readFullInto(f, cols.Depth[i0:i1]); err != nil {
+			return err
+		}
+		// 10. Sequences (u32)
+		if err := readFullInto(f, cols.Sequences[i0:i1]); err != nil {
+			return err
+		}
+		// 11. BidPx (float64)
+		if err := readFullInto(f, cols.BidPx[i0:i1]); err != nil {
+			return err
+		}
+		// 12. AskPx (float64)
+		if err := readFullInto(f, cols.AskPx[i0:i1]); err != nil {
+			return err
+		}
+		// 13. BidSz (float64)
+		if err := readFullInto(f, cols.BidSz[i0:i1]); err != nil {
+			return err
+		}
+		// 14. AskSz (float64)
+		if err := readFullInto(f, cols.AskSz[i0:i1]); err != nil {
+			return err
+		}
+		// 15. BidCt (u32)
+		if err := readFullInto(f, cols.BidCt[i0:i1]); err != nil {
+			return err
+		}
+		// 16. AskCt (u32)
+		if err := readFullInto(f, cols.AskCt[i0:i1]); err != nil {
+			return err
+		}
+		// 17. Publisher IDs (u16)
+		if err := readFullInto(f, cols.PublisherID[i0:i1]); err != nil {
+			return err
+		}
+		// 18. Instrument IDs (u32)
+		if err := readFullInto(f, cols.InstrumentID[i0:i1]); err != nil {
+			return err
+		}
+
+		pos += n
+	}
+
+	if pos != nRows {
+		return fmt.Errorf("row count mismatch: loaded=%d, expected=%d", pos, nRows)
+	}
+
+	cols.Count = nRows
+	return nil
 }
 ```
 
@@ -579,29 +1031,39 @@ import (
 	"os"
 )
 
-// GNC3 Constants (Version bumped for format change)
 const (
-	MagicGNC  = "GNC3"
-	ChunkSize = 8192 // Power of 2 aligns better with pages
+	// Bump the magic so we can distinguish from the old on-disk layout.
+	MagicGNC  = "GNC4"
+	ChunkSize = 64 * 1024 // rows per chunk
 )
 
 type Encoder struct {
-	// Buffers for fixed-width data
+	// Core fields
 	tsEvent   []uint64
 	tsRecv    []uint64
 	tsInDelta []int32
 
-	pxBuffer []float64 // Store normalized floats in RAM
-	szBuffer []uint32
-	sdBuffer []int8
-	flBuffer []uint8
+	pxBuffer []float64
+	szBuffer []float64
+
+	sdBuffer    []int8
+	acBuffer    []int8
+	flBuffer    []uint8
+	depthBuffer []uint8
+
+	sqBuffer []uint32
 
 	bpBuffer []float64
 	apBuffer []float64
-	bsBuffer []uint32
-	asBuffer []uint32
-	bcBuffer []uint32
-	acBuffer []uint32
+
+	bsBuffer  []float64
+	asBuffer  []float64
+	bcBuffer  []uint32
+	acCBuffer []uint32
+
+	// Identity
+	pubBuffer  []uint16
+	instBuffer []uint32
 
 	totalRows    uint64
 	chunkOffsets []uint64
@@ -613,8 +1075,10 @@ func NewEncoder(path string) (*Encoder, error) {
 	if err != nil {
 		return nil, err
 	}
-	// Reserve header space (64 bytes)
-	if _, err := f.Seek(64, io.SeekStart); err != nil {
+
+	// Reserve header space with zeros.
+	zeroHeader := make([]byte, 64)
+	if _, err := f.Write(zeroHeader); err != nil {
 		f.Close()
 		return nil, err
 	}
@@ -623,128 +1087,241 @@ func NewEncoder(path string) (*Encoder, error) {
 		tsEvent:   make([]uint64, 0, ChunkSize),
 		tsRecv:    make([]uint64, 0, ChunkSize),
 		tsInDelta: make([]int32, 0, ChunkSize),
-		pxBuffer:  make([]float64, 0, ChunkSize),
-		szBuffer:  make([]uint32, 0, ChunkSize),
-		sdBuffer:  make([]int8, 0, ChunkSize),
-		flBuffer:  make([]uint8, 0, ChunkSize),
-		bpBuffer:  make([]float64, 0, ChunkSize),
-		apBuffer:  make([]float64, 0, ChunkSize),
-		bsBuffer:  make([]uint32, 0, ChunkSize),
-		asBuffer:  make([]uint32, 0, ChunkSize),
+
+		pxBuffer: make([]float64, 0, ChunkSize),
+		szBuffer: make([]float64, 0, ChunkSize),
+
+		sdBuffer:    make([]int8, 0, ChunkSize),
+		acBuffer:    make([]int8, 0, ChunkSize),
+		flBuffer:    make([]uint8, 0, ChunkSize),
+		depthBuffer: make([]uint8, 0, ChunkSize),
+
+		sqBuffer: make([]uint32, 0, ChunkSize),
+
+		bpBuffer: make([]float64, 0, ChunkSize),
+		apBuffer: make([]float64, 0, ChunkSize),
+
+		bsBuffer:  make([]float64, 0, ChunkSize),
+		asBuffer:  make([]float64, 0, ChunkSize),
 		bcBuffer:  make([]uint32, 0, ChunkSize),
-		acBuffer:  make([]uint32, 0, ChunkSize),
-		outFile:   f,
+		acCBuffer: make([]uint32, 0, ChunkSize),
+
+		pubBuffer:  make([]uint16, 0, ChunkSize),
+		instBuffer: make([]uint32, 0, ChunkSize),
+
+		outFile: f,
 	}, nil
 }
 
-func (e *Encoder) AddRow(tsE, tsR uint64, tsD int32, px int64, sz uint32, side int8, fl uint8, bp, ap int64, bs, as, bc, ac uint32) error {
+// AddRow ingests a single TBBO record into the current chunk.
+// All price/size fields are converted once to float64 here and
+// written as raw float64s on disk (no fixed-9 round-trip).
+func (e *Encoder) AddRow(
+	pubID uint16,
+	instrID uint32,
+	tsE uint64,
+	tsR uint64,
+	tsD int32,
+	pxRaw int64,
+	sz uint32,
+	side int8,
+	action int8,
+	fl uint8,
+	depth uint8,
+	seq uint32,
+	bpRaw int64,
+	apRaw int64,
+	bs uint32,
+	as uint32,
+	bc uint32,
+	ac uint32,
+) error {
 	e.tsEvent = append(e.tsEvent, tsE)
 	e.tsRecv = append(e.tsRecv, tsR)
 	e.tsInDelta = append(e.tsInDelta, tsD)
 
-	e.pxBuffer = append(e.pxBuffer, float64(px)*PxScale)
-	e.szBuffer = append(e.szBuffer, sz)
-	e.sdBuffer = append(e.sdBuffer, side)
-	e.flBuffer = append(e.flBuffer, fl)
+	// Convert once from fixed-9 to float64.
+	e.pxBuffer = append(e.pxBuffer, float64(pxRaw)*PxScale)
+	e.szBuffer = append(e.szBuffer, float64(sz))
 
-	e.bpBuffer = append(e.bpBuffer, float64(bp)*PxScale)
-	e.apBuffer = append(e.apBuffer, float64(ap)*PxScale)
-	e.bsBuffer = append(e.bsBuffer, bs)
-	e.asBuffer = append(e.asBuffer, as)
+	e.sdBuffer = append(e.sdBuffer, side)
+	e.acBuffer = append(e.acBuffer, action)
+	e.flBuffer = append(e.flBuffer, fl)
+	e.depthBuffer = append(e.depthBuffer, depth)
+
+	e.sqBuffer = append(e.sqBuffer, seq)
+
+	e.bpBuffer = append(e.bpBuffer, float64(bpRaw)*PxScale)
+	e.apBuffer = append(e.apBuffer, float64(apRaw)*PxScale)
+
+	e.bsBuffer = append(e.bsBuffer, float64(bs))
+	e.asBuffer = append(e.asBuffer, float64(as))
 	e.bcBuffer = append(e.bcBuffer, bc)
-	e.acBuffer = append(e.acBuffer, ac)
+	e.acCBuffer = append(e.acCBuffer, ac)
+
+	e.pubBuffer = append(e.pubBuffer, pubID)
+	e.instBuffer = append(e.instBuffer, instrID)
 
 	e.totalRows++
-
 	if len(e.tsEvent) >= ChunkSize {
 		return e.flushChunk()
 	}
 	return nil
 }
 
-func (e *Encoder) Close() error {
-	if e.outFile == nil {
+func (e *Encoder) flushChunk() error {
+	n := len(e.tsEvent)
+	if n == 0 {
 		return nil
 	}
-	defer e.outFile.Close()
 
+	offset, _ := e.outFile.Seek(0, io.SeekCurrent)
+	e.chunkOffsets = append(e.chunkOffsets, uint64(offset))
+
+	// Chunk length header (uint32)
+	var scratch [4]byte
+	binary.LittleEndian.PutUint32(scratch[:], uint32(n))
+	if _, err := e.outFile.Write(scratch[:]); err != nil {
+		return err
+	}
+
+	// Order must match decoder.go
+
+	// Timing
+	if _, err := e.outFile.Write(asBytes(e.tsEvent)); err != nil {
+		return err
+	}
+	if _, err := e.outFile.Write(asBytes(e.tsRecv)); err != nil {
+		return err
+	}
+	if _, err := e.outFile.Write(asBytes(e.tsInDelta)); err != nil {
+		return err
+	}
+
+	// Prices and sizes (raw float64)
+	if _, err := e.outFile.Write(asBytes(e.pxBuffer)); err != nil {
+		return err
+	}
+	if _, err := e.outFile.Write(asBytes(e.szBuffer)); err != nil {
+		return err
+	}
+
+	// Side, Action, Flags, Depth
+	if _, err := e.outFile.Write(asBytes(e.sdBuffer)); err != nil {
+		return err
+	}
+	if _, err := e.outFile.Write(asBytes(e.acBuffer)); err != nil {
+		return err
+	}
+	if _, err := e.outFile.Write(asBytes(e.flBuffer)); err != nil {
+		return err
+	}
+	if _, err := e.outFile.Write(asBytes(e.depthBuffer)); err != nil {
+		return err
+	}
+
+	// Sequence
+	if _, err := e.outFile.Write(asBytes(e.sqBuffer)); err != nil {
+		return err
+	}
+
+	// BBO prices (float64)
+	if _, err := e.outFile.Write(asBytes(e.bpBuffer)); err != nil {
+		return err
+	}
+	if _, err := e.outFile.Write(asBytes(e.apBuffer)); err != nil {
+		return err
+	}
+
+	// BBO sizes and counts
+	if _, err := e.outFile.Write(asBytes(e.bsBuffer)); err != nil {
+		return err
+	}
+	if _, err := e.outFile.Write(asBytes(e.asBuffer)); err != nil {
+		return err
+	}
+	if _, err := e.outFile.Write(asBytes(e.bcBuffer)); err != nil {
+		return err
+	}
+	if _, err := e.outFile.Write(asBytes(e.acCBuffer)); err != nil {
+		return err
+	}
+
+	// Identity: publisher / instrument
+	if _, err := e.outFile.Write(asBytes(e.pubBuffer)); err != nil {
+		return err
+	}
+	if _, err := e.outFile.Write(asBytes(e.instBuffer)); err != nil {
+		return err
+	}
+
+	// Reset slices (keep capacity)
+	e.tsEvent = e.tsEvent[:0]
+	e.tsRecv = e.tsRecv[:0]
+	e.tsInDelta = e.tsInDelta[:0]
+
+	e.pxBuffer = e.pxBuffer[:0]
+	e.szBuffer = e.szBuffer[:0]
+
+	e.sdBuffer = e.sdBuffer[:0]
+	e.acBuffer = e.acBuffer[:0]
+	e.flBuffer = e.flBuffer[:0]
+	e.depthBuffer = e.depthBuffer[:0]
+
+	e.sqBuffer = e.sqBuffer[:0]
+
+	e.bpBuffer = e.bpBuffer[:0]
+	e.apBuffer = e.apBuffer[:0]
+
+	e.bsBuffer = e.bsBuffer[:0]
+	e.asBuffer = e.asBuffer[:0]
+	e.bcBuffer = e.bcBuffer[:0]
+	e.acCBuffer = e.acCBuffer[:0]
+
+	e.pubBuffer = e.pubBuffer[:0]
+	e.instBuffer = e.instBuffer[:0]
+
+	return nil
+}
+
+func (e *Encoder) Close() error {
 	if len(e.tsEvent) > 0 {
 		if err := e.flushChunk(); err != nil {
 			return err
 		}
 	}
-	return e.writeFooter()
-}
-
-func (e *Encoder) flushChunk() error {
-	offset, _ := e.outFile.Seek(0, io.SeekCurrent)
-	e.chunkOffsets = append(e.chunkOffsets, uint64(offset))
-
-	// Write chunk count
-	binary.Write(e.outFile, binary.LittleEndian, uint32(len(e.tsEvent)))
-
-	// RAW BINARY WRITES
-	// NOTE: We convert floats back to int64 for compact disk storage
-
-	binary.Write(e.outFile, binary.LittleEndian, e.tsEvent)
-	binary.Write(e.outFile, binary.LittleEndian, e.tsRecv)
-	binary.Write(e.outFile, binary.LittleEndian, e.tsInDelta)
-
-	writeFloatAsInt64(e.outFile, e.pxBuffer) // Prices
-	binary.Write(e.outFile, binary.LittleEndian, e.szBuffer)
-	binary.Write(e.outFile, binary.LittleEndian, e.sdBuffer)
-	binary.Write(e.outFile, binary.LittleEndian, e.flBuffer)
-
-	writeFloatAsInt64(e.outFile, e.bpBuffer) // BidPx
-	writeFloatAsInt64(e.outFile, e.apBuffer) // AskPx
-	binary.Write(e.outFile, binary.LittleEndian, e.bsBuffer)
-	binary.Write(e.outFile, binary.LittleEndian, e.asBuffer)
-	binary.Write(e.outFile, binary.LittleEndian, e.bcBuffer)
-	binary.Write(e.outFile, binary.LittleEndian, e.acBuffer)
-
-	// Reset buffers
-	e.tsEvent = e.tsEvent[:0]
-	e.tsRecv = e.tsRecv[:0]
-	e.tsInDelta = e.tsInDelta[:0]
-	e.pxBuffer = e.pxBuffer[:0]
-	e.szBuffer = e.szBuffer[:0]
-	e.sdBuffer = e.sdBuffer[:0]
-	e.flBuffer = e.flBuffer[:0]
-	e.bpBuffer = e.bpBuffer[:0]
-	e.apBuffer = e.apBuffer[:0]
-	e.bsBuffer = e.bsBuffer[:0]
-	e.asBuffer = e.asBuffer[:0]
-	e.bcBuffer = e.bcBuffer[:0]
-	e.acBuffer = e.acBuffer[:0]
-
-	return nil
+	if err := e.writeFooter(); err != nil {
+		return err
+	}
+	return e.outFile.Close()
 }
 
 func (e *Encoder) writeFooter() error {
 	footerPos, _ := e.outFile.Seek(0, io.SeekCurrent)
 
-	binary.Write(e.outFile, binary.LittleEndian, uint32(len(e.chunkOffsets)))
-	binary.Write(e.outFile, binary.LittleEndian, e.chunkOffsets)
+	// Chunk index: [u32 count][u64 offsets...]
+	var scratch [4]byte
+	binary.LittleEndian.PutUint32(scratch[:], uint32(len(e.chunkOffsets)))
+	if _, err := e.outFile.Write(scratch[:]); err != nil {
+		return err
+	}
+	if len(e.chunkOffsets) > 0 {
+		if _, err := e.outFile.Write(asBytes(e.chunkOffsets)); err != nil {
+			return err
+		}
+	}
 
-	// Write Header
-	e.outFile.Seek(0, io.SeekStart)
+	// Rewrite Header
+	if _, err := e.outFile.Seek(0, io.SeekStart); err != nil {
+		return err
+	}
 	header := make([]byte, 64)
 	copy(header[0:4], MagicGNC)
 	binary.LittleEndian.PutUint64(header[8:16], e.totalRows)
-	// Other header fields can be zeroed or used for versioning
 	binary.LittleEndian.PutUint64(header[24:32], uint64(footerPos))
-	e.outFile.Write(header)
 
-	return nil
-}
-
-// Helper to convert normalized floats back to raw int64 for disk
-func writeFloatAsInt64(w io.Writer, data []float64) {
-	buf := make([]int64, len(data))
-	for i, v := range data {
-		buf[i] = int64(v / PxScale)
-	}
-	binary.Write(w, binary.LittleEndian, buf)
+	_, err := e.outFile.Write(header)
+	return err
 }
 ```
 
@@ -763,7 +1340,8 @@ import (
 )
 
 func main() {
-	runtime.GOMAXPROCS(CPUThreads)
+	// Use all logical CPUs for scheduling; per-command concurrency is limited separately.
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	if len(os.Args) < 2 {
 		printHelp()
@@ -775,27 +1353,25 @@ func main() {
 
 	switch cmd {
 	case "data":
+		// Ingests raw .dbn files into the high-performance .quantdev format
 		runData()
 	case "test":
-		runTest() // Uses zero-alloc test.go
+		// Runs the Microstructure Backtest + Metrics
+		runTest()
 	case "check":
+		// Forensic analysis of data quality
 		runCheck()
-
 	default:
-		fmt.Printf("Unknown command: %s\n", cmd)
 		printHelp()
-		os.Exit(1)
 	}
-
-	fmt.Printf("\n[sys] Execution Time: %s\n", time.Since(start))
+	fmt.Printf("\n[sys] Time: %s\n", time.Since(start))
 }
 
 func printHelp() {
-	fmt.Println("Usage: go run . [command]")
-	fmt.Println("  data   - Ingest .dbn files -> .quantdev (GNC3 format)")
-	fmt.Println("  test   - Compute Atoms & Stats (Parallel)")
-	fmt.Println("  check  - Data Integrity Scan")
-	fmt.Println("  bench  - Hardware Capability Benchmark (Unsafe)")
+	fmt.Println("Usage: go run . [data|test|check]")
+	fmt.Println("  data  -> Convert raw Databento (.dbn) to optimized format")
+	fmt.Println("  test  -> Run strategy + metrics")
+	fmt.Println("  check -> Analyze data files for gaps and packet loss")
 }
 ```
 
@@ -809,188 +1385,597 @@ package main
 import (
 	"math"
 	"sync"
+	"time"
+	"unique"
 )
 
-// --- ATOM AGGREGATOR (Replaces Workspace) ---
-// Instead of storing 200M floats, we store 20 stat accumulators.
-type AtomAggregator struct {
-	Stats [AtomCount]MetricStats
+// ============================================================================
+//  Signal indices & IDs
+// ============================================================================
+
+type SignalID = unique.Handle[string]
+
+// Index constants so SignalEngine.Compute stays readable and stable.
+const (
+	SigIdx_SOFM = iota
+	SigIdx_IATI
+	SigIdx_MicroSkew
+	SigIdx_StaleTrade
+	SigIdx_Intensity
+
+	SigIdx_DecayedOrderCountFlow
+	SigIdx_SpreadRecovery
+	SigIdx_LiquidityVacuum
+
+	SigIdx_ComboIBKR // blended IBKR-winning combo
+
+	NumSignals
+)
+
+// Register human-readable IDs for reporting.
+var (
+	Signal_SOFM       = unique.Make("Alpha_SignedOrderFlowMomentum")
+	Signal_IATI       = unique.Make("Alpha_ImpactAdjTradeImbalance")
+	Signal_MicroSkew  = unique.Make("Alpha_MicropriceSkew")
+	Signal_StaleTrade = unique.Make("Alpha_StaleTradeDirection")
+	Signal_Intensity  = unique.Make("Alpha_IntertradeIntensity")
+
+	Signal_DecayedOrderCountFlow = unique.Make("Alpha_DecayedOrderCountFlow15_45s")
+	Signal_SpreadRecovery        = unique.Make("Alpha_SpreadRecoveryFadeFollow")
+	Signal_LiquidityVacuum       = unique.Make("Alpha_LiquidityVacuumContinuation")
+	Signal_ComboIBKR             = unique.Make("Alpha_IBKR2025Combo")
+)
+
+// Order here must match SigIdx_*.
+var ActiveSignals = []SignalID{
+	Signal_SOFM,
+	Signal_IATI,
+	Signal_MicroSkew,
+	Signal_StaleTrade,
+	Signal_Intensity,
+	Signal_DecayedOrderCountFlow,
+	Signal_SpreadRecovery,
+	Signal_LiquidityVacuum,
+	Signal_ComboIBKR,
 }
 
-var AtomAggPool = sync.Pool{
-	New: func() any { return &AtomAggregator{} },
+// ============================================================================
+//  Market physics (state along the tape)
+// ============================================================================
+
+type SpreadShockState struct {
+	Active       bool
+	ShockSide    int8   // +1 buy shock, -1 sell shock
+	WideStartTS  uint64 // when spread first exceeded 1.8 * avg
+	BaseSpread   float64
+	LastEvalTS   uint64
+	LastSpread   float64
+	Recovered    bool
+	FollowMarked bool
 }
 
-// ComputeAndAggregate runs the FUSED KERNEL.
-// It computes the signal and the stats in a single pass.
-func ComputeAndAggregate(raw *TBBOColumns, agg *AtomAggregator) {
-	n := raw.Count
-	if n < 2 {
+type MarketPhysics struct {
+	PrevTime  uint64
+	PrevPrice float64
+	PrevMid   float64
+	PrevBidSz float64
+	PrevAskSz float64
+
+	// Rolling TBBO features (in trade time)
+	SOFWindow       *RollingWindow // signed order-flow momentum
+	IntensityWindow *RollingWindow // signed arrival intensity
+
+	SOFMAvg      float64
+	IntensityAvg float64
+
+	// New: spread statistics (for spread recovery primitive)
+	SpreadWindow *RollingWindow
+	SpreadAvg    float64
+
+	// New: simple realized vol proxy for decay tuning
+	VolWindow *RollingWindow
+
+	// New: decayed signed order count flow
+	OrderCountFlow      float64
+	OrderCountStdWindow *RollingWindow
+	OrderCountStd       float64
+	OrderCountDecay     float64 // adapt between ~0.96–0.985
+
+	// New: liquidity window for vacuum detection
+	DepthWindow  *RollingWindow
+	DepthAvg     float64
+	VacuumSignal float64
+
+	// New: spread shock / recovery state & signal
+	SpreadShock  SpreadShockState
+	SpreadSignal float64
+}
+
+func NewMarketPhysics() *MarketPhysics {
+	return &MarketPhysics{
+		// Existing
+		SOFWindow:       NewRollingWindow(32),
+		IntensityWindow: NewRollingWindow(64),
+
+		// New
+		SpreadWindow:        NewRollingWindow(20),  // 20-event spread avg
+		VolWindow:           NewRollingWindow(512), // rough 5-min equivalent
+		OrderCountStdWindow: NewRollingWindow(256),
+		OrderCountDecay:     0.97,                  // default; tuned by vol
+		DepthWindow:         NewRollingWindow(256), // trailing size at touch
+	}
+}
+
+// RollingWindow: simple O(1) moving average.
+type RollingWindow struct {
+	Buf  []float64
+	Head int
+	Sum  float64
+	Size int
+}
+
+func NewRollingWindow(n int) *RollingWindow {
+	if n <= 0 {
+		n = 1
+	}
+	return &RollingWindow{Buf: make([]float64, n), Size: n}
+}
+
+func (r *RollingWindow) Update(val float64) float64 {
+	if r.Size == 0 {
+		return val
+	}
+	r.Sum -= r.Buf[r.Head]
+	r.Buf[r.Head] = val
+	r.Sum += val
+	r.Head = (r.Head + 1) % r.Size
+	return r.Sum / float64(r.Size)
+}
+
+// ============================================================================
+//  Atoms update (core microstructure feature vector + new primitives)
+// ============================================================================
+
+func (mp *MarketPhysics) UpdateAtoms(a *Atoms, i int, raw *TBBOColumns) {
+	p_t := raw.Prices[i]
+	q_t := raw.Sizes[i]
+	s_t := raw.Sides[i]
+
+	a_t, b_t := raw.AskPx[i], raw.BidPx[i]
+	A_t, B_t := raw.AskSz[i], raw.BidSz[i]
+	NA_t, NB_t := float64(raw.AskCt[i]), float64(raw.BidCt[i])
+
+	// "Real" available size at the touch after an aggressive trade
+	a.RealBidSz = B_t
+	a.RealAskSz = A_t
+
+	if raw.Actions[i] == 'T' {
+		switch s_t {
+		case -1: // sell hits bid
+			a.RealBidSz = math.Max(0, B_t-q_t)
+		case 1: // buy lifts ask
+			a.RealAskSz = math.Max(0, A_t-q_t)
+		}
+	}
+
+	// Trade sign & signed volume
+	a.SignedVol = q_t * float64(s_t)
+	a.TradeSign = s_t
+
+	a.PriceImpact = 0
+	if mp.PrevPrice != 0 {
+		a.PriceImpact = p_t - mp.PrevPrice
+	}
+
+	// Time between TBBO events
+	dt := raw.TsEvent[i] - mp.PrevTime
+	if dt == 0 {
+		dt = 1
+	}
+	a.InterTradeDur = dt
+
+	a.SignedVelocity = 0
+	if dt > 0 {
+		a.SignedVelocity = a.SignedVol / float64(dt)
+	}
+
+	// "Whale shock" heuristic (very large trade vs available depth)
+	a.WhaleShock = 0
+	if q_t > (A_t + B_t) {
+		a.WhaleShock = 1.0
+	}
+
+	// L1 depth imbalance & pressure alignment
+	denomImb := B_t + A_t + Epsilon
+	imbalance := (B_t - A_t) / denomImb
+	a.PressureAlign = float64(s_t) * imbalance
+
+	// Spread, mid, effective spread, Amihud
+	a.QuotedSpread = a_t - b_t
+	mid := (a_t + b_t) * 0.5
+	a.MidPrice = mid
+
+	a.EffectiveSpread = float64(s_t) * (p_t - mid)
+	a.InstantAmihud = math.Abs(a.PriceImpact) / math.Max(1.0, q_t)
+	a.VolImbalance = imbalance
+	a.CountImbalance = (NB_t - NA_t) / (NB_t + NA_t + Epsilon)
+
+	// Microprice and signed deviation from trade
+	a.MicroPrice = (b_t*A_t + a_t*B_t) / denomImb
+	a.MicroDev = float64(s_t) * (p_t - a.MicroPrice)
+
+	// "Cent magnet" (price around integer / .50 / .25 levels)
+	_, frac := math.Modf(mid)
+	dist := frac
+	if dist > 0.5 {
+		dist = 1.0 - dist
+	}
+	a.CentMagnet = 1.0 / (1.0 + 100.0*dist)
+
+	// Average order size at the touch
+	a.AvgSzBid = B_t / math.Max(1.0, NB_t)
+	a.AvgSzAsk = A_t / math.Max(1.0, NA_t)
+
+	// Latency / capture diagnostics
+	a.CaptureLat = int64(raw.TsRecv[i] - raw.TsEvent[i])
+	a.SendDelta = raw.TsInDelta[i]
+
+	// =======================================================================
+	//  New rolling state: spread, vol, depth
+	// =======================================================================
+
+	// Spread rolling mean (for spread recovery primitive)
+	if mp.SpreadWindow != nil {
+		mp.SpreadAvg = mp.SpreadWindow.Update(a.QuotedSpread)
+	}
+
+	// Depth rolling mean (for liquidity vacuum; use total L1 size)
+	if mp.DepthWindow != nil {
+		mp.DepthAvg = mp.DepthWindow.Update(A_t + B_t)
+	}
+
+	// Realized-vol proxy using mid log-returns
+	if mp.VolWindow != nil && mp.PrevMid > 0 && mid > 0 {
+		ret := math.Log(mid / mp.PrevMid)
+		vol2Avg := mp.VolWindow.Update(ret * ret)
+		vol := math.Sqrt(math.Max(vol2Avg, 0))
+		// Map vol into a decay between ~0.96 (quiet) and ~0.985 (wild)
+		// Calibration is coarse but good enough for testing.
+		switch {
+		case vol < 5e-5:
+			mp.OrderCountDecay = 0.96
+		case vol < 2e-4:
+			mp.OrderCountDecay = 0.97
+		case vol < 8e-4:
+			mp.OrderCountDecay = 0.975
+		default:
+			mp.OrderCountDecay = 0.985
+		}
+	}
+
+	// =======================================================================
+	//  TBBO directional alphas + new IBKR survivors
+	// =======================================================================
+
+	if raw.Actions[i] == 'T' && s_t != 0 && q_t > 0 {
+		// ---------------------------------------------------------------
+		// 1) Signed Order Flow Momentum (S-OFM)
+		// ---------------------------------------------------------------
+		depth := A_t + B_t
+		if depth < 1.0 {
+			depth = 1.0
+		}
+		normSignedVol := (q_t / depth) * float64(s_t)
+		if mp.SOFWindow != nil {
+			mp.SOFMAvg = mp.SOFWindow.Update(normSignedVol)
+		}
+
+		// ---------------------------------------------------------------
+		// 2) Inter-trade Intensity Imbalance (Hawkes-like)
+		// ---------------------------------------------------------------
+		dtSec := float64(a.InterTradeDur) * 1e-9 // ns → seconds
+		if dtSec <= 0 {
+			dtSec = 1e-9
+		}
+		const tau = 0.5 // seconds, rough half-life for intensity memory
+
+		var weight float64
+		if dtSec < 0.01 { // small-x approximation: e^{-x} ≈ 1 - x
+			x := dtSec / tau
+			weight = 1.0 - x
+			if weight < 0 {
+				weight = 0
+			}
+		} else {
+			weight = math.Exp(-dtSec / tau)
+		}
+
+		instIntensity := float64(s_t) * weight
+		if mp.IntensityWindow != nil {
+			mp.IntensityAvg = mp.IntensityWindow.Update(instIntensity)
+		}
+
+		// ---------------------------------------------------------------
+		// 3) Decayed Signed Order Count Flow (IBKR primitive #1)
+		//    Flow = Flow * decay + (side=='B' ? +ask_ct_00 : -bid_ct_00)
+		// ---------------------------------------------------------------
+		var deltaCount float64
+		if s_t > 0 {
+			deltaCount = float64(raw.AskCt[i])
+		} else {
+			deltaCount = -float64(raw.BidCt[i])
+		}
+		mp.OrderCountFlow = mp.OrderCountFlow*mp.OrderCountDecay + deltaCount
+		if mp.OrderCountStdWindow != nil {
+			mp.OrderCountStd = math.Sqrt(mp.OrderCountStdWindow.Update(mp.OrderCountFlow * mp.OrderCountFlow))
+		}
+
+		// ---------------------------------------------------------------
+		// 4) Liquidity Vacuum Continuation (IBKR primitive #4)
+		//    Post-trade aggressed-side size drops <= 11% of trailing avg
+		// ---------------------------------------------------------------
+		var postAggSize float64
+		if s_t > 0 {
+			postAggSize = A_t
+		} else {
+			postAggSize = B_t
+		}
+		if mp.DepthAvg > 0 && postAggSize <= 0.11*mp.DepthAvg {
+			// Strong continuation impulse in direction of aggressor
+			mp.VacuumSignal = mp.VacuumSignal*0.90 + float64(s_t)
+		} else {
+			// Gentle decay when no vacuum
+			mp.VacuumSignal *= 0.98
+		}
+
+		// ---------------------------------------------------------------
+		// 5) Spread Recovery Fade/Follow (IBKR primitive #2)
+		//    Shock: spread > 1.8 * 20-period avg
+		//    Recovery < 18s => fade; Recovery > 55s => follow
+		// ---------------------------------------------------------------
+		mp.updateSpreadShock(raw.TsEvent[i], s_t, a.QuotedSpread)
+	} else {
+		// When not trading, let liquidity vacuum / spread signal decay a bit.
+		mp.VacuumSignal *= 0.99
+		mp.SpreadSignal *= 0.97
+	}
+}
+
+func (mp *MarketPhysics) UpdateState(i int, raw *TBBOColumns, atoms *Atoms) {
+	mp.PrevTime = raw.TsEvent[i]
+	mp.PrevPrice = raw.Prices[i]
+	mp.PrevMid = atoms.MidPrice
+	mp.PrevBidSz = raw.BidSz[i]
+	mp.PrevAskSz = raw.AskSz[i]
+}
+
+// --------------------------------------------------------------------------
+// Spread shock state machine for spread recovery fade/follow
+// --------------------------------------------------------------------------
+
+func (mp *MarketPhysics) updateSpreadShock(ts uint64, tradeSign int8, spread float64) {
+	if mp.SpreadAvg <= 0 || spread <= 0 || tradeSign == 0 {
 		return
 	}
 
-	// 1. Setup Input Pointers (SoA)
-	p := raw.Prices
-	q := raw.Sizes
-	s := raw.Sides
-	bp := raw.BidPx
-	ap := raw.AskPx
-	bs := raw.BidSz
-	as := raw.AskSz
-	bc := raw.BidCt
-	ac := raw.AskCt
-	tEng := raw.TsEvent
-	tCap := raw.TsRecv
-	dSend := raw.TsInDelta
+	// Detect start of a shock: spread widens beyond 1.8x average.
+	if !mp.SpreadShock.Active && spread > 1.8*mp.SpreadAvg {
+		mp.SpreadShock = SpreadShockState{
+			Active:      true,
+			ShockSide:   tradeSign,
+			WideStartTS: ts,
+			BaseSpread:  mp.SpreadAvg,
+			LastEvalTS:  ts,
+			LastSpread:  spread,
+		}
+		return
+	}
 
-	// 2. Pre-calculate Target (Future Log Return)
-	// We optimize this by only allocating ONE vector for the target,
-	// rather than 20 vectors for signals.
-	// Optimization: Stack allocate this if 'n' was small, but 'n' is large.
-	// We use a pooled slice for the target to prevent allocs in the loop.
-	targets := GetTargetBuffer(n)
-	defer PutTargetBuffer(targets)
+	if !mp.SpreadShock.Active {
+		return
+	}
 
-	// Compute Target: Log(Mid_t+1 / Mid_t)
-	for i := 0; i < n-1; i++ {
-		m1 := (ap[i] + bp[i]) * 0.5
-		m2 := (ap[i+1] + bp[i+1]) * 0.5
-		if m1 > 1e-8 && m2 > 1e-8 {
-			targets[i] = math.Log(m2 / m1)
+	mp.SpreadShock.LastEvalTS = ts
+	mp.SpreadShock.LastSpread = spread
+
+	// How long has spread been in shock regime?
+	dt := ts - mp.SpreadShock.WideStartTS
+	dtSec := float64(dt) * 1e-9
+
+	// Recovery: spread back near normal
+	if spread <= 1.05*mp.SpreadShock.BaseSpread {
+		// Recovery happened
+		mp.SpreadShock.Recovered = true
+		if dtSec < 18.0 {
+			// Fast recovery -> fade the initial move
+			mp.SpreadSignal = -float64(mp.SpreadShock.ShockSide)
+		} else if dtSec > 55.0 {
+			// Very slow recovery, treat as follow confirmation
+			mp.SpreadSignal = float64(mp.SpreadShock.ShockSide)
+		}
+		mp.SpreadShock.Active = false
+		return
+	}
+
+	// If we've been wide for a long time with no recovery, classify as follow.
+	if dtSec > 55.0 && spread > 1.8*mp.SpreadShock.BaseSpread {
+		mp.SpreadShock.FollowMarked = true
+		mp.SpreadSignal = float64(mp.SpreadShock.ShockSide)
+		mp.SpreadShock.Active = false
+		return
+	}
+}
+
+// ============================================================================
+//  Signal engine: computes the full signal vector for all primitives
+// ============================================================================
+
+type SignalEngine struct{}
+
+// clampFloat64 keeps signals in a reasonable range so the generic execution
+// logic (|alpha| > threshold) is usable without retuning everything.
+func clampFloat64(x, lo, hi float64) float64 {
+	if x < lo {
+		return lo
+	}
+	if x > hi {
+		return hi
+	}
+	return x
+}
+
+// Global session location (CME / IBKR) for RTH booster.
+var (
+	cmeLoc     *time.Location
+	cmeLocOnce sync.Once
+)
+
+func isRTHOpenOrClose(ts uint64) bool {
+	cmeLocOnce.Do(func() {
+		loc, err := time.LoadLocation("America/Chicago")
+		if err != nil {
+			cmeLoc = time.UTC
 		} else {
-			targets[i] = math.NaN() // Skip invalid
+			cmeLoc = loc
 		}
+	})
+	t := time.Unix(0, int64(ts)).In(cmeLoc)
+	wd := t.Weekday()
+	if wd == time.Saturday || wd == time.Sunday {
+		return false
 	}
-	// Last element has no future
-	targets[n-1] = math.NaN()
+	hhmm := t.Hour()*60 + t.Minute()
 
-	// 3. THE HOT LOOP (Fused)
-	// Iterate once, compute all atoms, update stats immediately.
-	// Variables pinned to registers.
-
-	var prevP float64 = p[0]
-	var prevT uint64 = tEng[0]
-	const epsilon = 1e-9
-
-	// Direct access to stats array to avoid bounds checks in loop
-	stats := &agg.Stats
-
-	for i := 0; i < n-1; i++ {
-		// Load common data into registers
-		target := targets[i]
-		if math.IsNaN(target) {
-			prevP = p[i]
-			prevT = tEng[i]
-			continue
-		}
-
-		curP := p[i]
-		curQ := float64(q[i])
-		curS := float64(s[i])
-		curBP := bp[i]
-		curAP := ap[i]
-		curTEng := tEng[i]
-
-		// --- ATOM CALCULATIONS & UPDATE ---
-
-		// 1. Signed Vol
-		stats[AtomSignedVol].UpdateInline(curQ*curS, target)
-
-		// 2. Trade Sign
-		stats[AtomTradeSign].UpdateInline(curS, target)
-
-		// 3. Price Impact
-		stats[AtomPriceImpact].UpdateInline(curP-prevP, target)
-
-		// 4. Velocity & 18. Duration
-		dt := curTEng - prevT
-		if dt == 0 {
-			dt = 1
-		}
-		dtF := float64(dt)
-		stats[AtomSignedVelocity].UpdateInline((curQ*curS)/dtF, target)
-		stats[AtomInterTradeDur].UpdateInline(dtF, target)
-
-		// 5. Whale Shock
-		liq := float64(bs[i] + as[i])
-		val := 0.0
-		if curQ > liq {
-			val = 1.0
-		}
-		stats[AtomWhaleShock].UpdateInline(val, target)
-
-		// 6. Pressure Align & 10. Vol Imbalance
-		curBS := float64(bs[i])
-		curAS := float64(as[i])
-		imbal := (curBS - curAS) / (curBS + curAS + epsilon)
-		stats[AtomPressureAlign].UpdateInline(curS*imbal, target)
-		stats[AtomVolImbalance].UpdateInline(imbal, target)
-
-		// 7. Quoted Spread
-		stats[AtomQuotedSpread].UpdateInline(curAP-curBP, target)
-
-		// 8. Effective Spread & 12. Mid
-		mid := (curAP + curBP) * 0.5
-		stats[AtomEffectiveSpread].UpdateInline(curS*(curP-mid), target)
-		stats[AtomMidPrice].UpdateInline(mid, target)
-
-		// 9. Instant Amihud
-		absRet := math.Abs(curP - prevP)
-		qSafe := curQ
-		if qSafe < 1 {
-			qSafe = 1
-		}
-		stats[AtomInstantAmihud].UpdateInline(absRet/qSafe, target)
-
-		// 11. Count Imbalance
-		cImbal := (float64(bc[i]) - float64(ac[i])) / (float64(bc[i]) + float64(ac[i]) + epsilon)
-		stats[AtomCountImbalance].UpdateInline(cImbal, target)
-
-		// 13. Micro Price & 14. Dev
-		micro := (curBP*curAS + curAP*curBS) / (curAS + curBS + epsilon)
-		stats[AtomMicroPrice].UpdateInline(micro, target)
-		stats[AtomMicroDev].UpdateInline(curS*(curP-micro), target)
-
-		// 15. Cent Magnet
-		_, frac := math.Modf(curP)
-		dist := math.Min(frac, 1.0-frac)
-		stats[AtomCentMagnet].UpdateInline(1.0/(1.0+100.0*dist), target)
-
-		// 16/17 Avg Sz
-		stats[AtomAvgSzBid].UpdateInline(curBS/math.Max(1.0, float64(bc[i])), target)
-		stats[AtomAvgSzAsk].UpdateInline(curAS/math.Max(1.0, float64(ac[i])), target)
-
-		// 19. Latency
-		stats[AtomCaptureLat].UpdateInline(float64(tCap[i]-curTEng), target)
-
-		// 20. Send Delta
-		stats[AtomSendDelta].UpdateInline(float64(dSend[i]), target)
-
-		// Shift State
-		prevP = curP
-		prevT = curTEng
+	// RTH open booster: 08:30–09:20 CT
+	if hhmm >= 8*60+30 && hhmm < 9*60+20 {
+		return true
 	}
 
-	// Finalize local stats
-	for i := 0; i < int(AtomCount); i++ {
-		agg.Stats[i].Finalize()
+	// RTH close booster: 14:00–15:00 CT
+	if hhmm >= 14*60 && hhmm < 15*60 {
+		return true
 	}
+	return false
 }
 
-// -- Helpers for Target Buffer Pooling --
-var targetPool = sync.Pool{
-	New: func() any { return make([]float64, 0, 100000) },
-}
-
-func GetTargetBuffer(n int) []float64 {
-	s := targetPool.Get().([]float64)
-	if cap(s) < n {
-		return make([]float64, n)
+// Compute fills out the current signal vector for all active signals.
+func (se *SignalEngine) Compute(
+	atoms *Atoms,
+	mp *MarketPhysics,
+	raw *TBBOColumns,
+	i int,
+	out *[NumSignals]float64,
+) {
+	// Default all signals to 0 each tick.
+	for k := 0; k < NumSignals; k++ {
+		out[k] = 0
 	}
-	return s[:n]
-}
-func PutTargetBuffer(s []float64) {
-	targetPool.Put(s)
+
+	// Trade-based signals only.
+	if raw.Actions[i] != 'T' || atoms.TradeSign == 0 || raw.Sizes[i] <= 0 {
+		return
+	}
+
+	s := float64(atoms.TradeSign)
+	q := raw.Sizes[i]
+
+	bidPx := raw.BidPx[i]
+	askPx := raw.AskPx[i]
+	bidSz := raw.BidSz[i]
+	askSz := raw.AskSz[i]
+
+	spread := askPx - bidPx
+	mid := atoms.MidPrice
+
+	// =====================================================================
+	// Existing 5 microstructure alphas
+	// =====================================================================
+
+	// 1) Signed Order Flow Momentum (S-OFM)
+	zSOFM := clampFloat64(mp.SOFMAvg*3.0, -5.0, 5.0)
+	out[SigIdx_SOFM] = zSOFM
+
+	// 2) Impact-Adjusted Trade Imbalance (IATI)
+	var depth float64
+	if atoms.TradeSign > 0 {
+		depth = askSz
+	} else {
+		depth = bidSz
+	}
+	if depth < 1.0 {
+		depth = 1.0
+	}
+	ratio := q / depth
+	zIATI := s * (ratio - 0.5) * 2.0
+	zIATI = clampFloat64(zIATI, -5.0, 5.0)
+	out[SigIdx_IATI] = zIATI
+
+	// 3) Microprice skew: microprice - mid (scaled stronger so it fires)
+	microSkew := atoms.MicroPrice - mid
+	norm := spread
+	if norm < 1e-9 {
+		norm = mid*1e-6 + 1e-9
+	}
+	// (microSkew / spread) is typically in [-0.5, 0.5]; multiply to hit ±1.5.
+	zMicro := clampFloat64((microSkew/norm)*10.0, -5.0, 5.0)
+	out[SigIdx_MicroSkew] = zMicro
+
+	// 4) Stale-trade / trade-through directionality
+	dtNs := float64(atoms.InterTradeDur)
+	dtMs := dtNs / 1e6 // ns → ms
+
+	zStale := 0.0
+	if dtMs > 50 { // "stale-ish" for liquid futures; tune per asset
+		timeStrength := 1.0 + math.Log1p(dtMs/50.0)
+
+		spNorm := 0.0
+		if mid > 0 && spread > 0 {
+			spNorm = (spread / mid) * 1e4 // spread in bps
+		}
+		if spNorm < 0 {
+			spNorm = 0
+		}
+		spreadStrength := 1.0 + 0.01*spNorm
+
+		strength := timeStrength * spreadStrength
+		zStale = s * clampFloat64(strength, 0.0, 4.0)
+	}
+	out[SigIdx_StaleTrade] = zStale
+
+	// 5) Inter-trade intensity imbalance (Hawkes-like)
+	zIntensity := clampFloat64(mp.IntensityAvg*3.0, -5.0, 5.0)
+	out[SigIdx_Intensity] = zIntensity
+
+	// =====================================================================
+	// New IBKR-resilient primitives
+	// =====================================================================
+
+	// 6) Decayed Signed Order Count Flow (z-scored)
+	zFlow := 0.0
+	if mp.OrderCountStd > 1e-6 {
+		zFlow = clampFloat64(mp.OrderCountFlow/mp.OrderCountStd, -5.0, 5.0)
+	}
+	out[SigIdx_DecayedOrderCountFlow] = zFlow
+
+	// 7) Spread Recovery Fade/Follow
+	// mp.SpreadSignal is already -1, 0, or +1-ish; just clamp lightly.
+	zSpreadRec := clampFloat64(mp.SpreadSignal, -3.0, 3.0)
+	out[SigIdx_SpreadRecovery] = zSpreadRec
+
+	// 8) Liquidity Vacuum Continuation
+	zVac := clampFloat64(mp.VacuumSignal, -5.0, 5.0)
+	out[SigIdx_LiquidityVacuum] = zVac
+
+	// =====================================================================
+	// 9) Combo: 0.52 * Flow + 0.33 * SpreadRecovery + 0.15 * Vacuum
+	//     with RTH open/close booster 1.48x
+	// =====================================================================
+
+	combo := 0.52*zFlow + 0.33*zSpreadRec + 0.15*zVac
+	if isRTHOpenOrClose(raw.TsEvent[i]) {
+		combo *= 1.48
+	}
+	out[SigIdx_ComboIBKR] = clampFloat64(combo, -7.5, 7.5)
 }
 ```
 
@@ -1003,112 +1988,741 @@ package main
 
 import (
 	"math"
+	"sort"
+	"sync"
 )
 
-type MetricStats struct {
+// ============================================================================
+//  ASSET CONFIGURATION
+// ============================================================================
+
+type AssetConfig struct {
+	Symbol        string
+	TickValue     float64
+	CostPerTrade  float64
+	BpsMultiplier float64
+}
+
+var AssetConfigs = map[string]AssetConfig{
+	"MES": {Symbol: "MES", TickValue: 1.25, CostPerTrade: 0.62, BpsMultiplier: 2.50},
+	"MNQ": {Symbol: "MNQ", TickValue: 0.50, CostPerTrade: 0.62, BpsMultiplier: 2.00},
+	"MGC": {Symbol: "MGC", TickValue: 1.00, CostPerTrade: 1.62, BpsMultiplier: 10.0},
+}
+
+func GetAssetConfig(sym string) AssetConfig {
+	if c, ok := AssetConfigs[sym]; ok {
+		return c
+	}
+	return AssetConfig{Symbol: sym, TickValue: 1.0, CostPerTrade: 0.0, BpsMultiplier: 1.0}
+}
+
+// ============================================================================
+//  TRADE-LEVEL / STRATEGY-LEVEL RISK METRICS (per signal × horizon)
+// ============================================================================
+
+// To avoid unbounded RAM growth we cap how many per-trade returns
+// and signal/return samples we keep for tail metrics / IC.
+const (
+	maxReturnsPerStat = 100_000
+	maxICSamples      = 100_000
+)
+
+// Here, each (signal, horizon) observation is treated as one "pseudo-trade":
+// - Position direction = sign(signal)
+// - Return = sign(signal) * future log-return
+// Fees = 0 (this is pure alpha / information evaluation).
+
+type AdvancedStats struct {
 	Count     int
-	ICPearson float64
-	Sharpe    float64
-	HitRate   float64
+	Wins      int
+	TotalPnL  float64 // sum of net returns (strategy returns)
+	TotalFees float64 // always 0 in pure-alpha mode
 
-	// Internal accumulators
-	sumProd   float64
-	sumSig    float64
-	sumRet    float64
-	sumSqSig  float64
-	sumSqRet  float64
-	sumPnL    float64
-	sumSqPnL  float64
-	hits      float64
-	validHits float64
+	MaxDD   float64
+	PeakPnL float64
+
+	PnL_Markout float64 // sum of "markout" returns (same as TotalPnL here)
+	PnL_Real    float64 // same as TotalPnL
+
+	SumPnL  float64
+	SumPnL2 float64
+	SumPnL3 float64
+	SumPnL4 float64
+
+	Returns []float64 // capped; used for tails / W/L ratio
 }
 
-// UpdateInline is designed for Fused Loops (Kernel Fusion).
-// It updates the stats for a single data point immediately.
-// 's' = signal, 'r' = return (target)
-func (m *MetricStats) UpdateInline(s, r float64) {
-	if math.IsNaN(s) || math.IsNaN(r) {
-		return
+func (s *AdvancedStats) Update(markout, retReal, fee float64) {
+	s.Count++
+	net := retReal - fee
+
+	s.TotalPnL += net
+	s.TotalFees += fee
+	s.PnL_Markout += markout
+	s.PnL_Real += net
+
+	if net > 0 {
+		s.Wins++
+	}
+	if s.TotalPnL > s.PeakPnL {
+		s.PeakPnL = s.TotalPnL
+	}
+	dd := s.PeakPnL - s.TotalPnL
+	if dd > s.MaxDD {
+		s.MaxDD = dd
 	}
 
-	m.Count++
-	m.sumSig += s
-	m.sumRet += r
-	m.sumSqSig += s * s
-	m.sumSqRet += r * r
-	m.sumProd += s * r
+	s.SumPnL += net
+	s.SumPnL2 += net * net
+	s.SumPnL3 += net * net * net
+	s.SumPnL4 += net * net * net * net
 
-	pnl := s * r
-	m.sumPnL += pnl
-	m.sumSqPnL += pnl * pnl
+	// Bound memory: keep only first maxReturnsPerStat samples.
+	if len(s.Returns) < maxReturnsPerStat {
+		s.Returns = append(s.Returns, net)
+	}
+}
 
-	if s != 0 && r != 0 {
-		m.validHits++
-		if (s > 0 && r > 0) || (s < 0 && r < 0) {
-			m.hits++
+func (s *AdvancedStats) WinRate() float64 {
+	if s.Count == 0 {
+		return 0
+	}
+	return float64(s.Wins) / float64(s.Count) * 100.0
+}
+
+func (s *AdvancedStats) Skewness() float64 {
+	if s.Count < 3 {
+		return 0
+	}
+	n := float64(s.Count)
+	mean := s.SumPnL / n
+	variance := (s.SumPnL2 / n) - (mean * mean)
+	if variance < 1e-12 {
+		return 0
+	}
+	stdDev := math.Sqrt(variance)
+	m3 := (s.SumPnL3 / n) - (3 * mean * (s.SumPnL2 / n)) + (2 * mean * mean * mean)
+	return m3 / (stdDev * stdDev * stdDev)
+}
+
+func (s *AdvancedStats) Sharpe() float64 {
+	if s.Count < 2 {
+		return 0
+	}
+	n := float64(s.Count)
+	mean := s.SumPnL / n
+	variance := (s.SumPnL2 / n) - mean*mean
+	if variance <= 1e-12 {
+		return 0
+	}
+	stdDev := math.Sqrt(variance)
+	return mean / stdDev
+}
+
+func (s *AdvancedStats) WinLossRatio() float64 {
+	var sumWin, sumLoss float64
+	var nWin, nLoss int
+
+	for _, r := range s.Returns {
+		if r > 0 {
+			sumWin += r
+			nWin++
+		} else if r < 0 {
+			sumLoss += r
+			nLoss++
 		}
 	}
+	if nWin == 0 || nLoss == 0 {
+		return 0
+	}
+	avgWin := sumWin / float64(nWin)
+	avgLoss := sumLoss / float64(nLoss)
+	if avgLoss == 0 {
+		return 0
+	}
+	return math.Abs(avgWin / avgLoss)
 }
 
-func (m *MetricStats) Add(other MetricStats) {
-	m.Count += other.Count
-	m.sumProd += other.sumProd
-	m.sumSig += other.sumSig
-	m.sumRet += other.sumRet
-	m.sumSqSig += other.sumSqSig
-	m.sumSqRet += other.sumSqRet
-	m.sumPnL += other.sumPnL
-	m.sumSqPnL += other.sumSqPnL
-	m.hits += other.hits
-	m.validHits += other.validHits
-	m.Finalize()
+func (s *AdvancedStats) TailPercentile(p float64) float64 {
+	n := len(s.Returns)
+	if n == 0 {
+		return 0
+	}
+	if p <= 0 {
+		p = 0
+	}
+	if p >= 1 {
+		p = 1
+	}
+	cp := make([]float64, n)
+	copy(cp, s.Returns)
+	sort.Float64s(cp)
+	idx := int(p * float64(n-1))
+	return cp[idx]
 }
 
-func (m *MetricStats) Finalize() {
-	n := float64(m.Count)
-	if n < 2 {
+// ============================================================================
+//  SIGNAL / RETURN JOINT METRICS (per signal × horizon)
+// ============================================================================
+
+type ICStats struct {
+	Sig []float64
+	Ret []float64
+}
+
+func (s *ICStats) Observe(sig, ret float64) {
+	if math.IsNaN(sig) || math.IsNaN(ret) {
 		return
 	}
-
-	// Pearson Correlation
-	num := n*m.sumProd - m.sumSig*m.sumRet
-	denX := n*m.sumSqSig - m.sumSig*m.sumSig
-	denY := n*m.sumSqRet - m.sumRet*m.sumRet
-
-	if denX > 0 && denY > 0 {
-		m.ICPearson = num / math.Sqrt(denX*denY)
-	} else {
-		m.ICPearson = 0
-	}
-
-	// Sharpe Ratio
-	meanPnL := m.sumPnL / n
-	varPnL := (m.sumSqPnL / n) - (meanPnL * meanPnL)
-	if varPnL > 0 {
-		m.Sharpe = meanPnL / math.Sqrt(varPnL)
-	} else {
-		m.Sharpe = 0
-	}
-
-	if m.validHits > 0 {
-		m.HitRate = m.hits / m.validHits
+	// Bound memory: keep at most maxICSamples
+	if len(s.Sig) < maxICSamples {
+		s.Sig = append(s.Sig, sig)
+		s.Ret = append(s.Ret, ret)
 	}
 }
 
-// ComputeStats is the legacy bulk method (kept for compatibility if needed)
-func ComputeStats(sig, ret []float64) MetricStats {
-	n := len(sig)
-	if n != len(ret) {
-		if len(ret) < n {
-			n = len(ret)
-		}
+func (s *ICStats) Count() int {
+	return len(s.Sig)
+}
+
+// Backwards-compatible alias for Pearson IC.
+func (s *ICStats) IC() float64 {
+	return s.PearsonIC()
+}
+
+// 1. Pearson IC
+func (s *ICStats) PearsonIC() float64 {
+	n := len(s.Sig)
+	if n < 2 || len(s.Ret) != n {
+		return 0
 	}
-	ms := MetricStats{Count: n}
+	return pearsonFromSamples(s.Sig, s.Ret)
+}
+
+// 1b. Rank IC (Spearman)
+func (s *ICStats) RankIC() float64 {
+	n := len(s.Sig)
+	if n < 2 || len(s.Ret) != n {
+		return 0
+	}
+
+	type pair struct {
+		v   float64
+		idx int
+	}
+
+	sPairs := make([]pair, n)
+	for i, v := range s.Sig {
+		sPairs[i] = pair{v, i}
+	}
+	sort.Slice(sPairs, func(i, j int) bool { return sPairs[i].v < sPairs[j].v })
+	rSig := make([]float64, n)
+	for rank, p := range sPairs {
+		rSig[p.idx] = float64(rank + 1)
+	}
+
+	rPairs := make([]pair, n)
+	for i, v := range s.Ret {
+		rPairs[i] = pair{v, i}
+	}
+	sort.Slice(rPairs, func(i, j int) bool { return rPairs[i].v < rPairs[j].v })
+	rRet := make([]float64, n)
+	for rank, p := range rPairs {
+		rRet[p.idx] = float64(rank + 1)
+	}
+
+	return pearsonFromSamples(rSig, rRet)
+}
+
+func pearsonFromSamples(x, y []float64) float64 {
+	n := len(x)
+	if n < 2 || len(y) != n {
+		return 0
+	}
+
+	var sumX, sumY, sumX2, sumY2, sumXY float64
 	for i := 0; i < n; i++ {
-		ms.UpdateInline(sig[i], ret[i])
+		xi := x[i]
+		yi := y[i]
+		sumX += xi
+		sumY += yi
+		sumX2 += xi * xi
+		sumY2 += yi * yi
+		sumXY += xi * yi
 	}
-	ms.Finalize()
-	return ms
+	nf := float64(n)
+	cov := (sumXY / nf) - (sumX/nf)*(sumY/nf)
+	varX := (sumX2 / nf) - (sumX/nf)*(sumX/nf)
+	varY := (sumY2 / nf) - (sumY/nf)*(sumY/nf)
+	if varX <= 1e-12 || varY <= 1e-12 {
+		return 0
+	}
+	return cov / math.Sqrt(varX*varY)
+}
+
+// 2. Hit rate sign(S) vs sign(R)
+func (s *ICStats) HitRate() float64 {
+	n := len(s.Sig)
+	if n == 0 || len(s.Ret) != n {
+		return 0
+	}
+	var total, correct int
+	for i := 0; i < n; i++ {
+		sig := s.Sig[i]
+		ret := s.Ret[i]
+		if ret == 0 || sig == 0 {
+			continue
+		}
+		signSig := 1
+		if sig < 0 {
+			signSig = -1
+		}
+		signRet := 1
+		if ret < 0 {
+			signRet = -1
+		}
+		if signSig == signRet {
+			correct++
+		}
+		total++
+	}
+	if total == 0 {
+		return 0
+	}
+	return float64(correct) / float64(total)
+}
+
+// 3. Decile conditional return curve
+func (s *ICStats) DecileCurve(K int) (avgRet []float64, counts []int) {
+	n := len(s.Sig)
+	if n == 0 || len(s.Ret) != n {
+		return nil, nil
+	}
+	if K <= 0 {
+		K = 10
+	}
+
+	type pair struct {
+		sig float64
+		ret float64
+	}
+	arr := make([]pair, n)
+	for i := 0; i < n; i++ {
+		arr[i] = pair{s.Sig[i], s.Ret[i]}
+	}
+	sort.Slice(arr, func(i, j int) bool { return arr[i].sig < arr[j].sig })
+
+	sums := make([]float64, K)
+	counts = make([]int, K)
+	for idx, p := range arr {
+		d := int(float64(idx) * float64(K) / float64(n))
+		if d == K {
+			d = K - 1
+		}
+		sums[d] += p.ret
+		counts[d]++
+	}
+	avgRet = make([]float64, K)
+	for k := 0; k < K; k++ {
+		if counts[k] > 0 {
+			avgRet[k] = sums[k] / float64(counts[k])
+		}
+	}
+	return avgRet, counts
+}
+
+// 4. Mutual Information / NMI
+func (s *ICStats) MutualInformation(sigBins, retBins int) (mi, nmi float64) {
+	n := len(s.Sig)
+	if n == 0 || len(s.Ret) != n {
+		return 0, 0
+	}
+	if sigBins <= 0 {
+		sigBins = 10
+	}
+	if retBins <= 0 {
+		retBins = 3
+	}
+
+	minS, maxS := s.Sig[0], s.Sig[0]
+	minR, maxR := s.Ret[0], s.Ret[0]
+	for i := 1; i < n; i++ {
+		if s.Sig[i] < minS {
+			minS = s.Sig[i]
+		}
+		if s.Sig[i] > maxS {
+			maxS = s.Sig[i]
+		}
+		if s.Ret[i] < minR {
+			minR = s.Ret[i]
+		}
+		if s.Ret[i] > maxR {
+			maxR = s.Ret[i]
+		}
+	}
+	if maxS == minS || maxR == minR {
+		return 0, 0
+	}
+
+	joint := make([][]float64, sigBins)
+	for i := range joint {
+		joint[i] = make([]float64, retBins)
+	}
+	margS := make([]float64, sigBins)
+	margR := make([]float64, retBins)
+
+	for i := 0; i < n; i++ {
+		sb := binIndex(s.Sig[i], minS, maxS, sigBins)
+		rb := binIndex(s.Ret[i], minR, maxR, retBins)
+		joint[sb][rb]++
+		margS[sb]++
+		margR[rb]++
+	}
+
+	nf := float64(n)
+	for i := 0; i < sigBins; i++ {
+		margS[i] /= nf
+	}
+	for j := 0; j < retBins; j++ {
+		margR[j] /= nf
+	}
+	for i := 0; i < sigBins; i++ {
+		for j := 0; j < retBins; j++ {
+			joint[i][j] /= nf
+		}
+	}
+
+	HY := 0.0
+	for j := 0; j < retBins; j++ {
+		p := margR[j]
+		if p > 0 {
+			HY -= p * math.Log(p)
+		}
+	}
+	if HY <= 0 {
+		return 0, 0
+	}
+
+	for i := 0; i < sigBins; i++ {
+		for j := 0; j < retBins; j++ {
+			pxy := joint[i][j]
+			if pxy <= 0 {
+				continue
+			}
+			px := margS[i]
+			py := margR[j]
+			if px <= 0 || py <= 0 {
+				continue
+			}
+			mi += pxy * math.Log(pxy/(px*py))
+		}
+	}
+	nmi = mi / HY
+	return mi, nmi
+}
+
+func binIndex(v, minV, maxV float64, bins int) int {
+	if v <= minV {
+		return 0
+	}
+	if v >= maxV {
+		return bins - 1
+	}
+	r := (v - minV) / (maxV - minV)
+	idx := int(r * float64(bins))
+	if idx < 0 {
+		idx = 0
+	}
+	if idx >= bins {
+		idx = bins - 1
+	}
+	return idx
+}
+
+// 5. Δ Log-loss (cross-entropy improvement vs baseline)
+func (s *ICStats) DeltaLogLoss() (baseline, model, delta float64) {
+	n := len(s.Ret)
+	if n == 0 || len(s.Sig) != n {
+		return 0, 0, 0
+	}
+
+	const eps = 1e-9
+	labels := make([]int, n) // 0=Down, 1=Flat, 2=Up
+	var counts [3]int
+
+	for i, r := range s.Ret {
+		var c int
+		if r > eps {
+			c = 2
+		} else if r < -eps {
+			c = 0
+		} else {
+			c = 1
+		}
+		labels[i] = c
+		counts[c]++
+	}
+
+	total := float64(n)
+	baseProb := [3]float64{}
+	for c := 0; c < 3; c++ {
+		if counts[c] > 0 {
+			baseProb[c] = float64(counts[c]) / total
+		} else {
+			baseProb[c] = 1e-12
+		}
+	}
+
+	var baseLoss float64
+	for i := 0; i < n; i++ {
+		p := baseProb[labels[i]]
+		baseLoss -= math.Log(p)
+	}
+	baseLoss /= total
+
+	const K = 10
+	minS, maxS := s.Sig[0], s.Sig[0]
+	for i := 1; i < n; i++ {
+		if s.Sig[i] < minS {
+			minS = s.Sig[i]
+		}
+		if s.Sig[i] > maxS {
+			maxS = s.Sig[i]
+		}
+	}
+	if maxS == minS {
+		return baseLoss, baseLoss, 0
+	}
+
+	binCounts := make([][3]int, K)
+	binTotals := make([]int, K)
+	for i := 0; i < n; i++ {
+		b := binIndex(s.Sig[i], minS, maxS, K)
+		c := labels[i]
+		binCounts[b][c]++
+		binTotals[b]++
+	}
+
+	probs := make([][3]float64, K)
+	for b := 0; b < K; b++ {
+		if binTotals[b] == 0 {
+			probs[b] = baseProb
+			continue
+		}
+		denom := float64(binTotals[b]) + 3.0
+		for c := 0; c < 3; c++ {
+			probs[b][c] = (float64(binCounts[b][c]) + 1.0) / denom
+		}
+	}
+
+	var modelLoss float64
+	for i := 0; i < n; i++ {
+		b := binIndex(s.Sig[i], minS, maxS, K)
+		c := labels[i]
+		p := probs[b][c]
+		modelLoss -= math.Log(p)
+	}
+	modelLoss /= total
+
+	return baseLoss, modelLoss, baseLoss - modelLoss
+}
+
+// ============================================================================
+//  SYMBOL REPORT / PORTFOLIO AGGREGATION
+// ============================================================================
+
+type SymbolReport struct {
+	Symbol string
+	Lock   sync.Mutex
+
+	Signals map[SignalID]*[HzCount]ICStats
+	Trades  map[SignalID]*[HzCount]AdvancedStats
+}
+
+func NewSymbolReport(sym string) *SymbolReport {
+	return &SymbolReport{
+		Symbol:  sym,
+		Signals: make(map[SignalID]*[HzCount]ICStats),
+		Trades:  make(map[SignalID]*[HzCount]AdvancedStats),
+	}
+}
+
+type Portfolio struct {
+	Assets map[string]*SymbolReport
+	Mu     sync.Mutex
+}
+
+func (p *Portfolio) MergeLocal(local *SymbolReport) {
+	p.Mu.Lock()
+	global, ok := p.Assets[local.Symbol]
+	if !ok {
+		global = NewSymbolReport(local.Symbol)
+		p.Assets[local.Symbol] = global
+	}
+	p.Mu.Unlock()
+
+	global.Lock.Lock()
+	defer global.Lock.Unlock()
+
+	for k, v := range local.Signals {
+		if _, ok := global.Signals[k]; !ok {
+			global.Signals[k] = &[HzCount]ICStats{}
+		}
+		for h := 0; h < int(HzCount); h++ {
+			dst := &global.Signals[k][h]
+			src := &v[h]
+			// Bound by maxICSamples already on insertion.
+			dst.Sig = append(dst.Sig, src.Sig...)
+			dst.Ret = append(dst.Ret, src.Ret...)
+			if len(dst.Sig) > maxICSamples {
+				dst.Sig = dst.Sig[:maxICSamples]
+				dst.Ret = dst.Ret[:maxICSamples]
+			}
+		}
+	}
+	for k, v := range local.Trades {
+		if _, ok := global.Trades[k]; !ok {
+			global.Trades[k] = &[HzCount]AdvancedStats{}
+		}
+		for h := 0; h < int(HzCount); h++ {
+			d := &global.Trades[k][h]
+			s := &v[h]
+
+			d.Count += s.Count
+			d.Wins += s.Wins
+			d.TotalPnL += s.TotalPnL
+			d.TotalFees += s.TotalFees
+			d.PnL_Markout += s.PnL_Markout
+			d.PnL_Real += s.PnL_Real
+			d.SumPnL += s.SumPnL
+			d.SumPnL2 += s.SumPnL2
+			d.SumPnL3 += s.SumPnL3
+			d.SumPnL4 += s.SumPnL4
+
+			// Append but cap at maxReturnsPerStat
+			space := maxReturnsPerStat - len(d.Returns)
+			if space > 0 {
+				if len(s.Returns) < space {
+					space = len(s.Returns)
+				}
+				d.Returns = append(d.Returns, s.Returns[:space]...)
+			}
+
+			if s.MaxDD > d.MaxDD {
+				d.MaxDD = s.MaxDD
+			}
+			if s.PeakPnL > d.PeakPnL {
+				d.PeakPnL = s.PeakPnL
+			}
+		}
+	}
+}
+
+// ============================================================================
+//  CORE STRATEGY LOOP: TBBO → Signals → Metrics (no execution sim)
+// ============================================================================
+
+func RunStrategy(raw *TBBOColumns, config AssetConfig, report *SymbolReport) {
+	n := raw.Count
+	if n < 2000 {
+		return
+	}
+
+	// --- BCE HOISTING: verify column lengths once ---
+	if len(raw.Prices) < n || len(raw.BidPx) < n || len(raw.AskPx) < n ||
+		len(raw.BidSz) < n || len(raw.AskSz) < n || len(raw.TsEvent) < n {
+		panic("corrupt TBBO column length")
+	}
+
+	// Hoist slice headers to locals (helps BCE and register allocation)
+	tsEvents := raw.TsEvent[:n]
+	prices := raw.Prices[:n]
+	bidPxs := raw.BidPx[:n]
+	askPxs := raw.AskPx[:n]
+	bidSzs := raw.BidSz[:n]
+	askSzs := raw.AskSz[:n]
+
+	mp := NewMarketPhysics()
+	signals := &SignalEngine{}
+
+	// --- INIT REPORTING POINTERS ---
+	var sigStats [NumSignals][HzCount]*ICStats
+	var trdStats [NumSignals][HzCount]*AdvancedStats
+
+	report.Lock.Lock()
+	for i, id := range ActiveSignals {
+		if _, ok := report.Signals[id]; !ok {
+			report.Signals[id] = &[HzCount]ICStats{}
+			report.Trades[id] = &[HzCount]AdvancedStats{}
+		}
+		for h := 0; h < int(HzCount); h++ {
+			sigStats[i][h] = &report.Signals[id][h]
+			trdStats[i][h] = &report.Trades[id][h]
+		}
+	}
+	report.Lock.Unlock()
+
+	cursors := [HzCount]int{}
+
+	// Initialize physics state with first tick
+	mp.PrevTime = tsEvents[0]
+	mp.PrevPrice = prices[0]
+	mp.PrevMid = (bidPxs[0] + askPxs[0]) * 0.5
+	mp.PrevBidSz = bidSzs[0]
+	mp.PrevAskSz = askSzs[0]
+
+	var atoms Atoms
+	var alphas [NumSignals]float64
+
+	for i := 1; i < n; i++ {
+		tNow := tsEvents[i]
+
+		// Pre-compute cursors for horizons (amortized O(1))
+		for h := 0; h < int(HzCount); h++ {
+			c := cursors[h]
+			if c < i {
+				c = i
+			}
+			tgt := tNow + HorizonDurations[h]
+			for c < n && tsEvents[c] < tgt {
+				c++
+			}
+			if c >= n {
+				c = n - 1
+			}
+			cursors[h] = c
+		}
+
+		// Update microstructure atoms and signals
+		mp.UpdateAtoms(&atoms, i, raw)
+		signals.Compute(&atoms, mp, raw, i, &alphas)
+
+		// For each horizon, record:
+		// - signal vs future log-return (IC, MI, ΔLL)
+		// - simple directional strategy returns: sign(signal) * retLog
+		for h := 0; h < int(HzCount); h++ {
+			c := cursors[h]
+			futMid := (bidPxs[c] + askPxs[c]) * 0.5
+			retLog := math.Log(futMid / atoms.MidPrice)
+
+			for sIdx := 0; sIdx < NumSignals; sIdx++ {
+				sig := alphas[sIdx]
+				sigStats[sIdx][h].Observe(sig, retLog)
+
+				if sig == 0 || math.IsNaN(sig) {
+					continue
+				}
+				dir := 1.0
+				if sig < 0 {
+					dir = -1.0
+				}
+				stratRet := dir * retLog
+				trdStats[sIdx][h].Update(stratRet, stratRet, 0.0)
+			}
+		}
+
+		mp.UpdateState(i, raw, &atoms)
+	}
 }
 ```
 
@@ -1123,6 +2737,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 	"sync"
 	"text/tabwriter"
 	"time"
@@ -1130,85 +2746,149 @@ import (
 
 func runTest() {
 	start := time.Now()
-	fmt.Println(">>> UNIFIED STUDY: 20-Atom TBBO Alpha Validation (FUSED KERNEL) <<<")
+	fmt.Println(">>> MICROSTRUCTURE SIGNAL PERFORMANCE (PURE ALPHA MODE) <<<")
 
 	files, _ := filepath.Glob("*.quantdev")
 	if len(files) == 0 {
-		fmt.Println("[fatal] No .quantdev files found.")
+		fmt.Println("No .quantdev files found.")
 		return
 	}
 
-	fmt.Printf("[config] Processing %d files with %d threads (GOGC=%s)...\n",
-		len(files), CPUThreads, os.Getenv("GOGC"))
+	portfolio := &Portfolio{Assets: make(map[string]*SymbolReport)}
 
-	// Global Aggregator (Fixed Array)
-	globalStats := make([]MetricStats, AtomCount)
-	var globalMu sync.Mutex
+	// Sort files by size (largest first)
+	type job struct {
+		path string
+		size int64
+	}
+	var jobs []job
+	for _, f := range files {
+		info, err := os.Stat(f)
+		if err == nil {
+			jobs = append(jobs, job{path: f, size: info.Size()})
+		}
+	}
+	sort.Slice(jobs, func(i, j int) bool { return jobs[i].size > jobs[j].size })
 
 	var wg sync.WaitGroup
-	sem := make(chan struct{}, CPUThreads)
+	// Use a smaller concurrency limit for memory-heavy backtest.
+	sem := make(chan struct{}, TestMaxParallel)
 
-	for _, path := range files {
+	for _, j := range jobs {
 		wg.Add(1)
 		sem <- struct{}{}
-
-		go func(p string) {
+		go func(path string) {
 			defer wg.Done()
 			defer func() { <-sem }()
 
-			// 1. Load Data (Now optimized with Unsafe/Copy)
-			cols, err := LoadQuantDev(p)
+			base := filepath.Base(path)
+			parts := strings.Split(base, "_")
+			sym := "UNKNOWN"
+			if len(parts) > 0 {
+				sym = strings.ToUpper(strings.TrimSuffix(parts[0], ".quantdev"))
+			}
+
+			config := GetAssetConfig(sym)
+			cols, err := LoadQuantDev(path)
 			if err != nil {
+				fmt.Printf("\n[err] %s: %v\n", path, err)
 				return
 			}
+			defer TBBOPool.Put(cols)
 
-			// 2. Fused Compute & Aggregation
-			// We no longer allocate huge AtomWorkspaces.
-			// We get a small Aggregator struct.
-			agg := AtomAggPool.Get().(*AtomAggregator)
-			// Clear previous stats
-			for i := range agg.Stats {
-				agg.Stats[i] = MetricStats{}
-			}
-
-			ComputeAndAggregate(cols, agg)
-
-			// Done with raw data immediately
-			TBBOPool.Put(cols)
-
-			// 3. Merge to Global
-			globalMu.Lock()
-			for id := 0; id < int(AtomCount); id++ {
-				globalStats[id].Add(agg.Stats[id])
-			}
-			globalMu.Unlock()
-
-			// Return aggregator
-			AtomAggPool.Put(agg)
-
-			fmt.Printf(".")
-		}(path)
+			local := NewSymbolReport(sym)
+			RunStrategy(cols, config, local)
+			portfolio.MergeLocal(local)
+			fmt.Print(".")
+		}(j.path)
 	}
 	wg.Wait()
-	fmt.Println(" Done.")
 
-	printReport(globalStats, time.Since(start))
+	fmt.Print("\n\n")
+
+	printPortfolio(portfolio)
+	fmt.Printf("[sys] Execution Time: %s\n", time.Since(start))
 }
 
-func printReport(stats []MetricStats, dur time.Duration) {
-	fmt.Println("\n=== 20-ATOM PERFORMANCE REPORT ===")
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
-	fmt.Fprintln(w, "ATOM\tCOUNT\tIC (NextTick)\tSHARPE\tHIT RATE")
-	fmt.Fprintln(w, "----\t-----\t-------------\t------\t--------")
+func printPortfolio(p *Portfolio) {
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
 
-	for i := 0; i < int(AtomCount); i++ {
-		s := stats[i]
-		name := AtomNames[i]
-		fmt.Fprintf(w, "%s\t%d\t%.4f\t%.4f\t%.2f%%\n",
-			name, s.Count, s.ICPearson, s.Sharpe, s.HitRate*100)
+	var syms []string
+	for k := range p.Assets {
+		syms = append(syms, k)
+	}
+	sort.Strings(syms)
+
+	for _, sym := range syms {
+		r := p.Assets[sym]
+		fmt.Fprintf(w, "\n===========================================================================================================\n")
+		fmt.Fprintf(w, " ASSET: %s\n", sym)
+		fmt.Fprintf(w, "===========================================================================================================\n")
+
+		// SignalID slice, sorted by underlying name
+		var sigs []SignalID
+		for k := range r.Signals {
+			sigs = append(sigs, k)
+		}
+		sort.Slice(sigs, func(i, j int) bool {
+			return sigs[i].Value() < sigs[j].Value()
+		})
+
+		for _, sID := range sigs {
+			fmt.Fprintf(w, "\n>> %s <<\n", sID.Value())
+
+			// Header for core checklist metrics per horizon
+			fmt.Fprintln(w, "HZ\tTRADES\tIC\tRANK_IC\tHIT%\tMI\tNMI\tSHARPE\tWIN%\tW/L\tSKEW\tMAX_DD\tP05\tP01\tΔLOGLOSS\tMARKOUT\tNET_PNL\tAVG_NET")
+			fmt.Fprintln(w, "--\t------\t--\t-------\t----\t--\t---\t------\t----\t---\t----\t------\t---\t---\t--------\t-------\t-------\t-------")
+
+			for h := 0; h < int(HzCount); h++ {
+				ts := r.Trades[sID][h]
+				ss := r.Signals[sID][h]
+				if ts.Count == 0 || ss.Count() == 0 {
+					continue
+				}
+
+				ic := ss.PearsonIC()
+				rankIC := ss.RankIC()
+				hitRate := ss.HitRate() * 100.0
+				mi, nmi := ss.MutualInformation(10, 3)
+				baseLL, modelLL, dLL := ss.DeltaLogLoss()
+
+				sharpe := ts.Sharpe()
+				winRate := ts.WinRate()
+				wl := ts.WinLossRatio()
+				skew := ts.Skewness()
+				maxDD := ts.MaxDD
+				p05 := ts.TailPercentile(0.05)
+				p01 := ts.TailPercentile(0.01)
+				avgNet := ts.TotalPnL / float64(ts.Count)
+
+				fmt.Fprintf(
+					w,
+					"%s\t%d\t%.3f\t%.3f\t%.1f\t%.3f\t%.3f\t%.2f\t%.1f\t%.2f\t%.2f\t%.0f\t%.1f\t%.1f\t%.4f/%.4f/%.4f\t%.0f\t%.0f\t%.2f\n",
+					HorizonNames[h],
+					ts.Count,
+					ic,
+					rankIC,
+					hitRate,
+					mi,
+					nmi,
+					sharpe,
+					winRate,
+					wl,
+					skew,
+					maxDD,
+					p05,
+					p01,
+					baseLL, modelLL, dLL,
+					ts.PnL_Markout,
+					ts.TotalPnL,
+					avgNet,
+				)
+			}
+		}
 	}
 	w.Flush()
-	fmt.Printf("\nTotal Time: %s\n", dur)
 }
 ```
 

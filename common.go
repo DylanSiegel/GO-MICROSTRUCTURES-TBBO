@@ -2,103 +2,150 @@ package main
 
 import (
 	"sync"
+	"unsafe"
 )
 
-// Global configuration
 const (
-	CPUThreads = 24 // Zen 4 (12C/24T)
-	BaseDir    = "data"
-	PxScale    = 1e-9 // Raw Int64 -> Float conversion
+	// Compute-heavy parallelism (pure CPU work)
+	CPUThreads = 24
+
+	// Disk I/O parallelism (streaming DBN -> quantdev)
+	// 4–8 tends to be near-optimal for NVMe; tune if needed.
+	IOThreads = 8
+
+	// Memory-heavy backtest parallelism (runTest)
+	TestMaxParallel = 4
+
+	PxScale = 1e-9
 )
 
-// --- HORIZON CONFIGURATION ---
+// --- CONFIGURATION ---
+const (
+	// Physics
+	Epsilon     = 1e-9
+	MaxLookback = 50
+
+	// Simulation
+	BaseLatencyNS = 15_000_000 // 15ms
+	MaxJitterNS   = 10_000_000 // 10ms
+)
+
+// --- HORIZONS: 10s / 20s / 30s ONLY ---
+
 type HorizonID int
 
 const (
 	Hz10s HorizonID = iota
+	Hz20s
 	Hz30s
-	Hz1m
-	Hz5m
 	HzCount
 )
 
-// Time deltas in Nanoseconds
 var HorizonDurations = [HzCount]uint64{
-	10_000_000_000,  // 10s
-	30_000_000_000,  // 30s
-	60_000_000_000,  // 1m
-	300_000_000_000, // 5m
+	10_000_000_000, // 10s
+	20_000_000_000, // 20s
+	30_000_000_000, // 30s
 }
 
-var HorizonNames = [HzCount]string{"10s", "30s", "1m ", "5m "}
+var HorizonNames = [HzCount]string{"10s", "20s", "30s"}
 
-// Validation Config
-const OOSRatio = 0.3 // Last 30% of rows are Out-of-Sample
-
-// --- ATOM INDEXING ---
-type AtomID int
-
+// Flags bitfield (matches DBN FlagSet raw bits as of DBN v2)
 const (
-	AtomSignedVol AtomID = iota
-	AtomTradeSign
-	AtomPriceImpact
-	AtomSignedVelocity
-	AtomWhaleShock
-	AtomPressureAlign
-	AtomQuotedSpread
-	AtomEffectiveSpread
-	AtomInstantAmihud
-	AtomVolImbalance
-	AtomCountImbalance
-	AtomMidPrice
-	AtomMicroPrice
-	AtomMicroDev
-	AtomCentMagnet
-	AtomAvgSzBid
-	AtomAvgSzAsk
-	AtomInterTradeDur
-	AtomCaptureLat
-	AtomSendDelta
-	AtomCount
+	LastFlag          = 1 << 0 // "end of event" / record is last for that event
+	SnapshotFlag      = 1 << 1
+	MbpFlag           = 1 << 2
+	TobFlag           = 1 << 3
+	PublisherSpecFlag = 1 << 4
+	BadTsRecvFlag     = 1 << 5
+	MaybeBadBookFlag  = 1 << 6
+	// bit 7 currently reserved
 )
 
-var AtomNames = [AtomCount]string{
-	"SignedVol", "TradeSign", "PriceImpact", "SignedVelocity", "WhaleShock", "PressureAlign",
-	"QuotedSpread", "EffectiveSpread", "InstantAmihud", "VolImbalance", "CountImbalance",
-	"MidPrice", "MicroPrice", "MicroDev", "CentMagnet", "AvgSzBid", "AvgSzAsk",
-	"InterTradeDur", "CaptureLat", "SendDelta",
+// --- THE 20 ATOMS (PHYSICS STATE) ---
+type Atoms struct {
+	// Flow
+	SignedVol      float64
+	TradeSign      int8
+	PriceImpact    float64
+	SignedVelocity float64
+	WhaleShock     float64
+	PressureAlign  float64
+
+	// Friction
+	QuotedSpread    float64
+	EffectiveSpread float64
+	InstantAmihud   float64
+	VolImbalance    float64
+	CountImbalance  float64
+
+	// Value
+	MidPrice   float64
+	MicroPrice float64
+	MicroDev   float64
+	CentMagnet float64
+	AvgSzBid   float64
+	AvgSzAsk   float64
+
+	// Time / latency
+	InterTradeDur uint64
+	CaptureLat    int64
+	SendDelta     int32
+
+	// Ghost Liquidity
+	RealBidSz float64
+	RealAskSz float64
 }
 
-// --- DATA LAYOUT (SoA) ---
+// --- DATA LAYOUT (Struct of Arrays) ---
+// This captures the full TBBO semantics from Databento's MBP-1-on-trade schema.
 type TBBOColumns struct {
 	Count int
 
+	// Identity / routing
+	PublisherID  []uint16
+	InstrumentID []uint32
+
+	// Timing
 	TsEvent   []uint64
 	TsRecv    []uint64
 	TsInDelta []int32
 
-	Prices []float64
-	Sizes  []uint32
-	Sides  []int8
-	Flags  []uint8
+	// Event
+	Prices    []float64 // trade/update price
+	Sizes     []float64 // order quantity
+	Sides     []int8    // -1 = Aggressive sell, +1 = Aggressive buy, 0 = None/unknown
+	Actions   []int8    // 'T', 'A', 'C', 'M', 'R', 'N', ...
+	Flags     []uint8   // DBN FlagSet raw bits
+	Depth     []uint8   // TBBO depth field (book level updated)
+	Sequences []uint32  // venue message sequence
 
-	BidPx []float64
-	AskPx []float64
-	BidSz []uint32
-	AskSz []uint32
-	BidCt []uint32
-	AskCt []uint32
+	// Top of book snapshot (post-event)
+	BidPx []float64 // best bid price
+	AskPx []float64 // best ask price
+	BidSz []float64 // best bid size
+	AskSz []float64 // best ask size
+	BidCt []uint32  // best bid order count
+	AskCt []uint32  // best ask order count
 }
 
 func (c *TBBOColumns) Reset() {
 	c.Count = 0
+
+	c.PublisherID = c.PublisherID[:0]
+	c.InstrumentID = c.InstrumentID[:0]
+
 	c.TsEvent = c.TsEvent[:0]
 	c.TsRecv = c.TsRecv[:0]
 	c.TsInDelta = c.TsInDelta[:0]
+
 	c.Prices = c.Prices[:0]
 	c.Sizes = c.Sizes[:0]
 	c.Sides = c.Sides[:0]
+	c.Actions = c.Actions[:0]
 	c.Flags = c.Flags[:0]
+	c.Depth = c.Depth[:0]
+	c.Sequences = c.Sequences[:0]
+
 	c.BidPx = c.BidPx[:0]
 	c.AskPx = c.AskPx[:0]
 	c.BidSz = c.BidSz[:0]
@@ -107,50 +154,57 @@ func (c *TBBOColumns) Reset() {
 	c.AskCt = c.AskCt[:0]
 }
 
+// Still useful for non-decoder paths if you ever have them.
 func (c *TBBOColumns) EnsureCapacity(n int) {
-	if cap(c.Prices) >= n {
-		return
-	}
-	// Helper to reduce repetition
-	growF64 := func() []float64 { return make([]float64, 0, n) }
-	growU64 := func() []uint64 { return make([]uint64, 0, n) }
-	growU32 := func() []uint32 { return make([]uint32, 0, n) }
-	growI32 := func() []int32 { return make([]int32, 0, n) }
-	growI8 := func() []int8 { return make([]int8, 0, n) }
-	growU8 := func() []uint8 { return make([]uint8, 0, n) }
+	if cap(c.TsEvent) < n {
+		// Identity
+		c.PublisherID = make([]uint16, 0, n)
+		c.InstrumentID = make([]uint32, 0, n)
 
-	c.TsEvent = growU64()
-	c.TsRecv = growU64()
-	c.TsInDelta = growI32()
-	c.Prices = growF64()
-	c.Sizes = growU32()
-	c.Sides = growI8()
-	c.Flags = growU8()
-	c.BidPx = growF64()
-	c.AskPx = growF64()
-	c.BidSz = growU32()
-	c.AskSz = growU32()
-	c.BidCt = growU32()
-	c.AskCt = growU32()
+		// Timing
+		c.TsEvent = make([]uint64, 0, n)
+		c.TsRecv = make([]uint64, 0, n)
+		c.TsInDelta = make([]int32, 0, n)
+
+		// Event
+		c.Prices = make([]float64, 0, n)
+		c.Sizes = make([]float64, 0, n)
+		c.Sides = make([]int8, 0, n)
+		c.Actions = make([]int8, 0, n)
+		c.Flags = make([]uint8, 0, n)
+		c.Depth = make([]uint8, 0, n)
+		c.Sequences = make([]uint32, 0, n)
+
+		// BBO
+		c.BidPx = make([]float64, 0, n)
+		c.AskPx = make([]float64, 0, n)
+		c.BidSz = make([]float64, 0, n)
+		c.AskSz = make([]float64, 0, n)
+		c.BidCt = make([]uint32, 0, n)
+		c.AskCt = make([]uint32, 0, n)
+	}
 }
 
-var TBBOPool = sync.Pool{
-	New: func() any {
-		const cap = 1_000_000
-		return &TBBOColumns{
-			TsEvent:   make([]uint64, 0, cap),
-			TsRecv:    make([]uint64, 0, cap),
-			TsInDelta: make([]int32, 0, cap),
-			Prices:    make([]float64, 0, cap),
-			Sizes:     make([]uint32, 0, cap),
-			Sides:     make([]int8, 0, cap),
-			Flags:     make([]uint8, 0, cap),
-			BidPx:     make([]float64, 0, cap),
-			AskPx:     make([]float64, 0, cap),
-			BidSz:     make([]uint32, 0, cap),
-			AskSz:     make([]uint32, 0, cap),
-			BidCt:     make([]uint32, 0, cap),
-			AskCt:     make([]uint32, 0, cap),
-		}
-	},
+var TBBOPool = sync.Pool{New: func() any { return &TBBOColumns{} }}
+
+// -----------------------------------------------------------------------------
+// Shared unsafe helper: convert any slice to []byte without extra alloc.
+// Used by encoder.go and decoder.go.
+// -----------------------------------------------------------------------------
+func asBytes[T any](s []T) []byte {
+	if len(s) == 0 {
+		return nil
+	}
+	sizeInBytes := len(s) * int(unsafe.Sizeof(s[0]))
+	return unsafe.Slice((*byte)(unsafe.Pointer(&s[0])), sizeInBytes)
+}
+
+// -----------------------------------------------------------------------------
+// resize: reuse existing backing arrays when possible (critical for sync.Pool).
+// -----------------------------------------------------------------------------
+func resize[T any](s []T, n int) []T {
+	if cap(s) < n {
+		return make([]T, n)
+	}
+	return s[:n]
 }

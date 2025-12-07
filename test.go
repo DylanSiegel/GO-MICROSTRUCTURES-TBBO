@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 	"sync"
 	"text/tabwriter"
 	"time"
@@ -12,123 +13,147 @@ import (
 
 func runTest() {
 	start := time.Now()
-	fmt.Println(">>> ALPHA ITERATION: ROBUST LOG-MATH & FIXED SIGNS <<<")
-	fmt.Printf("[config] Horizons: %v | OOS Split: Last %.0f%%\n", HorizonNames, OOSRatio*100)
+	fmt.Println(">>> MICROSTRUCTURE SIGNAL PERFORMANCE (PURE ALPHA MODE) <<<")
 
 	files, _ := filepath.Glob("*.quantdev")
 	if len(files) == 0 {
-		fmt.Println("[fatal] No .quantdev files found.")
+		fmt.Println("No .quantdev files found.")
 		return
 	}
 
-	master := &StudyAggregator{}
-	var mu sync.Mutex
+	portfolio := &Portfolio{Assets: make(map[string]*SymbolReport)}
+
+	// Sort files by size (largest first)
+	type job struct {
+		path string
+		size int64
+	}
+	var jobs []job
+	for _, f := range files {
+		info, err := os.Stat(f)
+		if err == nil {
+			jobs = append(jobs, job{path: f, size: info.Size()})
+		}
+	}
+	sort.Slice(jobs, func(i, j int) bool { return jobs[i].size > jobs[j].size })
 
 	var wg sync.WaitGroup
-	sem := make(chan struct{}, CPUThreads)
+	// Use a smaller concurrency limit for memory-heavy backtest.
+	sem := make(chan struct{}, TestMaxParallel)
 
-	for _, path := range files {
+	for _, j := range jobs {
 		wg.Add(1)
 		sem <- struct{}{}
-
-		go func(p string) {
+		go func(path string) {
 			defer wg.Done()
 			defer func() { <-sem }()
 
-			cols, err := LoadQuantDev(p)
+			base := filepath.Base(path)
+			parts := strings.Split(base, "_")
+			sym := "UNKNOWN"
+			if len(parts) > 0 {
+				sym = strings.ToUpper(strings.TrimSuffix(parts[0], ".quantdev"))
+			}
+
+			config := GetAssetConfig(sym)
+			cols, err := LoadQuantDev(path)
 			if err != nil {
+				fmt.Printf("\n[err] %s: %v\n", path, err)
 				return
 			}
+			defer TBBOPool.Put(cols)
 
-			localAgg := StudyPool.Get().(*StudyAggregator)
-			*localAgg = StudyAggregator{}
-
-			RunMultiHorizonStudy(cols, localAgg)
-			TBBOPool.Put(cols)
-
-			mu.Lock()
-			for a := 0; a < int(AtomCount); a++ {
-				for h := 0; h < int(HzCount); h++ {
-					master.Stats[a][h][0].Merge(localAgg.Stats[a][h][0])
-					master.Stats[a][h][1].Merge(localAgg.Stats[a][h][1])
-				}
-			}
-			mu.Unlock()
-			StudyPool.Put(localAgg)
+			local := NewSymbolReport(sym)
+			RunStrategy(cols, config, local)
+			portfolio.MergeLocal(local)
 			fmt.Print(".")
-		}(path)
+		}(j.path)
 	}
 	wg.Wait()
-	fmt.Println("\nDone.")
 
-	printDetailedReport(master, time.Since(start))
+	fmt.Print("\n\n")
+
+	printPortfolio(portfolio)
+	fmt.Printf("[sys] Execution Time: %s\n", time.Since(start))
 }
 
-func printDetailedReport(agg *StudyAggregator, dur time.Duration) {
+func printPortfolio(p *Portfolio) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
 
-	// Custom mapping for our new definitions
-	descriptions := map[AtomID]string{
-		AtomTradeSign:       "TradeSign (Base)",
-		AtomSignedVol:       "SignedLogVol",
-		AtomVolImbalance:    "LogVolImbalance",
-		AtomCountImbalance:  "LogCountImbalance",
-		AtomSignedVelocity:  "LogTimeVelocity",
-		AtomEffectiveSpread: "AggressorDev (P-Mid)",
-		AtomMicroDev:        "MicroDev (Micro-Mid)",
-		AtomInstantAmihud:   "InstantAmihud",
+	var syms []string
+	for k := range p.Assets {
+		syms = append(syms, k)
 	}
+	sort.Strings(syms)
 
-	activeAtoms := []AtomID{
-		AtomTradeSign, AtomSignedVol, AtomVolImbalance, AtomCountImbalance,
-		AtomSignedVelocity, AtomEffectiveSpread, AtomMicroDev, AtomInstantAmihud,
-	}
+	for _, sym := range syms {
+		r := p.Assets[sym]
+		fmt.Fprintf(w, "\n===========================================================================================================\n")
+		fmt.Fprintf(w, " ASSET: %s\n", sym)
+		fmt.Fprintf(w, "===========================================================================================================\n")
 
-	for _, atom := range activeAtoms {
-		name := descriptions[atom]
-		fmt.Fprintf(w, "\n>> %s <<\n", name)
-		fmt.Fprintln(w, "HORIZON\tIC(IS)\tIC(OOS)\tOOS_DEC%\tT-STAT\tSHARPE\tSTATUS")
-		fmt.Fprintln(w, "-------\t------\t-------\t--------\t------\t------\t------")
+		// SignalID slice, sorted by underlying name
+		var sigs []SignalID
+		for k := range r.Signals {
+			sigs = append(sigs, k)
+		}
+		sort.Slice(sigs, func(i, j int) bool {
+			return sigs[i].Value() < sigs[j].Value()
+		})
 
-		prevIC := 0.0
-		monotonic := true
+		for _, sID := range sigs {
+			fmt.Fprintf(w, "\n>> %s <<\n", sID.Value())
 
-		for h := 0; h < int(HzCount); h++ {
-			is := agg.Stats[atom][h][0].Calculate()
-			oos := agg.Stats[atom][h][1].Calculate()
+			// Header for core checklist metrics per horizon
+			fmt.Fprintln(w, "HZ\tTRADES\tIC\tRANK_IC\tHIT%\tMI\tNMI\tSHARPE\tWIN%\tW/L\tSKEW\tMAX_DD\tP05\tP01\tΔLOGLOSS\tMARKOUT\tNET_PNL\tAVG_NET")
+			fmt.Fprintln(w, "--\t------\t--\t-------\t----\t--\t---\t------\t----\t---\t----\t------\t---\t---\t--------\t-------\t-------\t-------")
 
-			decay := 0.0
-			if math.Abs(is.IC) > 1e-5 {
-				decay = (1.0 - (oos.IC / is.IC)) * 100
-			}
-
-			status := "OK"
-			if math.Abs(oos.TStat) < 2.0 {
-				status = "NO_SIG"
-			} else if decay > 40 {
-				status = "DECAY" // >40% drop is concerning
-			} else if decay < -40 {
-				status = "REGIME" // OOS much stronger
-			}
-
-			// Sharpe Proxy (Scaled)
-			fmt.Fprintf(w, "%s\t%.4f\t%.4f\t%.1f%%\t%.1f\t%.2f\t%s\n",
-				HorizonNames[h], is.IC, oos.IC, decay, oos.TStat, oos.Sharpe, status)
-
-			if h > 0 {
-				if (is.IC > 0 && prevIC < 0) || (is.IC < 0 && prevIC > 0) {
-					monotonic = false
+			for h := 0; h < int(HzCount); h++ {
+				ts := r.Trades[sID][h]
+				ss := r.Signals[sID][h]
+				if ts.Count == 0 || ss.Count() == 0 {
+					continue
 				}
-			}
-			prevIC = is.IC
-		}
 
-		monoStr := "NO"
-		if monotonic {
-			monoStr = "YES"
+				ic := ss.PearsonIC()
+				rankIC := ss.RankIC()
+				hitRate := ss.HitRate() * 100.0
+				mi, nmi := ss.MutualInformation(10, 3)
+				baseLL, modelLL, dLL := ss.DeltaLogLoss()
+
+				sharpe := ts.Sharpe()
+				winRate := ts.WinRate()
+				wl := ts.WinLossRatio()
+				skew := ts.Skewness()
+				maxDD := ts.MaxDD
+				p05 := ts.TailPercentile(0.05)
+				p01 := ts.TailPercentile(0.01)
+				avgNet := ts.TotalPnL / float64(ts.Count)
+
+				fmt.Fprintf(
+					w,
+					"%s\t%d\t%.3f\t%.3f\t%.1f\t%.3f\t%.3f\t%.2f\t%.1f\t%.2f\t%.2f\t%.0f\t%.1f\t%.1f\t%.4f/%.4f/%.4f\t%.0f\t%.0f\t%.2f\n",
+					HorizonNames[h],
+					ts.Count,
+					ic,
+					rankIC,
+					hitRate,
+					mi,
+					nmi,
+					sharpe,
+					winRate,
+					wl,
+					skew,
+					maxDD,
+					p05,
+					p01,
+					baseLL, modelLL, dLL,
+					ts.PnL_Markout,
+					ts.TotalPnL,
+					avgNet,
+				)
+			}
 		}
-		fmt.Fprintf(w, "Monotonic: %s\n", monoStr)
 	}
 	w.Flush()
-	fmt.Printf("\n[sys] Analysis Time: %s\n", dur)
 }

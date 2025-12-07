@@ -10,10 +10,9 @@ import (
 	"sync"
 )
 
-// DBN Constants
 const (
 	DBNMagic  = "DBN"
-	RTypeTBBO = 1 // Record Type 1 is MBP-0/TBBO
+	RTypeTBBO = 1 // TBBO is MBP-1-on-trade in Databento's schema; rtype==1 for MBP-1/TBBO
 )
 
 func runData() {
@@ -26,7 +25,9 @@ func runData() {
 	}
 
 	var wg sync.WaitGroup
-	sem := make(chan struct{}, CPUThreads)
+	// Use I/O-specific concurrency instead of full CPUThreads to avoid
+	// thrashing the filesystem and NVMe queue.
+	sem := make(chan struct{}, IOThreads)
 
 	for _, f := range files {
 		wg.Add(1)
@@ -49,15 +50,16 @@ func convertDBNToQuantDev(path string) {
 	defer f.Close()
 
 	outPath := strings.TrimSuffix(path, filepath.Ext(path)) + ".quantdev"
-	fmt.Printf(" -> Converting %s to %s... ", filepath.Base(path), filepath.Base(outPath))
+	fmt.Printf(" -> Converting %s...\n", filepath.Base(path))
 
 	enc, err := NewEncoder(outPath)
 	if err != nil {
+		fmt.Printf("encoder init failed %s: %v\n", outPath, err)
 		return
 	}
 	defer enc.Close()
 
-	// 1. Read Header
+	// 1. Read Header (DBN metadata prefix)
 	headerBuf := make([]byte, 8)
 	startOffset := int64(0)
 	if n, _ := f.Read(headerBuf); n == 8 {
@@ -68,9 +70,9 @@ func convertDBNToQuantDev(path string) {
 	}
 	f.Seek(startOffset, io.SeekStart)
 
-	// 2. Optimized Streaming Loop
-	const ChunkSize = 64 * 1024 // 64KB Buffer
-	buf := make([]byte, ChunkSize)
+	// 2. Streaming Loop
+	const BufSize = 64 * 1024
+	buf := make([]byte, BufSize)
 	leftover := make([]byte, 0, 256)
 	count := 0
 
@@ -80,10 +82,8 @@ func convertDBNToQuantDev(path string) {
 			break
 		}
 
-		// Combine leftover + new data
 		data := buf[:n]
 		if len(leftover) > 0 {
-			// This alloc is rare (once per chunk boundary)
 			data = append(leftover, buf[:n]...)
 			leftover = leftover[:0]
 		}
@@ -97,7 +97,6 @@ func convertDBNToQuantDev(path string) {
 				break
 			}
 
-			// DBN Spec: Byte 0 is length in 4-byte words
 			lengthWords := int(data[offset])
 			if lengthWords == 0 {
 				offset++
@@ -110,37 +109,65 @@ func convertDBNToQuantDev(path string) {
 				break
 			}
 
-			// HOT PATH: Parse Record without allocations
-			// We use direct slice indexing which compiles to MOV on amd64
 			rec := data[offset : offset+recSize]
 			offset += recSize
 
-			if rec[1] != RTypeTBBO || recSize != 80 {
+			// rtype at byte 1
+			if rec[1] != RTypeTBBO {
 				continue
 			}
 
-			// Field Extraction (Manual LittleEndian)
-			// Go 1.25+ compiler inlines these efficiently.
+			// Header area:
+			// [0]  len (u8)
+			// [1]  rtype (u8)
+			// [2:4] publisher_id (u16 LE)
+			// [4:8] instrument_id (u32 LE)
+			// [8:16] ts_event (u64 LE)
+
+			pubID := binary.LittleEndian.Uint16(rec[2:4])
+			instrID := binary.LittleEndian.Uint32(rec[4:8])
 			tsEvent := binary.LittleEndian.Uint64(rec[8:16])
+
+			// Body:
+			// [16:24] price (i64 fixed-9)
+			// [24:28] size (u32)
+			// [28]    action (char)
+			// [29]    side (char: 'B','A','N')
+			// [30]    flags (u8)
+			// [31]    depth (u8)
+			// [32:40] ts_recv (u64)
+			// [40:44] ts_in_delta (i32)
+			// [44:48] sequence (u32)
+			// [48:56] bid_px_00 (i64)
+			// [56:64] ask_px_00 (i64)
+			// [64:68] bid_sz_00 (u32)
+			// [68:72] ask_sz_00 (u32)
+			// [72:76] bid_ct_00 (u32)
+			// [76:80] ask_ct_00 (u32)
+
 			pRaw := int64(binary.LittleEndian.Uint64(rec[16:24]))
 			size := binary.LittleEndian.Uint32(rec[24:28])
-
-			// Side char logic (Fixed QF1003)
-			// Uses a switch for cleaner jump table generation
+			actionChar := int8(rec[28])
 			sideChar := rec[29]
+			flags := rec[30]
+			depth := rec[31]
+
 			var s int8
 			switch sideChar {
 			case 'B':
 				s = 1
 			case 'A':
 				s = -1
+			case 'N':
+				s = 0
+			default:
+				s = 0
 			}
 
-			flags := rec[30]
 			tsRecv := binary.LittleEndian.Uint64(rec[32:40])
 			tsDelta := int32(binary.LittleEndian.Uint32(rec[40:44]))
+			seq := binary.LittleEndian.Uint32(rec[44:48])
 
-			// BBO Levels
 			bpRaw := int64(binary.LittleEndian.Uint64(rec[48:56]))
 			apRaw := int64(binary.LittleEndian.Uint64(rec[56:64]))
 			bs := binary.LittleEndian.Uint32(rec[64:68])
@@ -148,12 +175,31 @@ func convertDBNToQuantDev(path string) {
 			bc := binary.LittleEndian.Uint32(rec[72:76])
 			ac := binary.LittleEndian.Uint32(rec[76:80])
 
-			// Filter Null Prices (DBN null is MaxInt64)
+			// Skip Null/placeholder prices (Databento uses i64::MAX as sentinel)
 			if pRaw == 9223372036854775807 {
 				continue
 			}
 
-			enc.AddRow(tsEvent, tsRecv, tsDelta, pRaw, size, s, flags, bpRaw, apRaw, bs, as, bc, ac)
+			_ = enc.AddRow(
+				pubID,
+				instrID,
+				tsEvent,
+				tsRecv,
+				tsDelta,
+				pRaw,
+				size,
+				s,
+				actionChar,
+				flags,
+				depth,
+				seq,
+				bpRaw,
+				apRaw,
+				bs,
+				as,
+				bc,
+				ac,
+			)
 			count++
 		}
 
@@ -162,5 +208,7 @@ func convertDBNToQuantDev(path string) {
 		}
 	}
 
-	fmt.Printf("Done (%d rows)\n", count)
+	if count == 0 {
+		fmt.Printf("   [warn] no TBBO records written for %s\n", filepath.Base(path))
+	}
 }

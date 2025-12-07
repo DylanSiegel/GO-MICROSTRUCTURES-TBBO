@@ -2,173 +2,435 @@ package main
 
 import (
 	"math"
-	"sync"
+	"unique"
 )
 
-// Global Stats Container
-type StudyAggregator struct {
-	Stats [AtomCount][HzCount][2]RobustStats
+// ============================================================================
+//  Signal indices & IDs
+// ============================================================================
+
+type SignalID = unique.Handle[string]
+
+const (
+	// The 5 Atomic Primitives
+	SigIdx_TrueOFI     = iota // Cont et al. Imbalance (Iceberg detection)
+	SigIdx_Crowding           // Retail vs Inst skew
+	SigIdx_LatUrgency         // Systemic congestion/urgency
+	SigIdx_SweepDepth         // Breakout detection (kappa)
+	SigIdx_Liquidation        // Forced run detection
+
+	// The Integration Vector (200ms Aggregate)
+	SigIdx_IntegratedState
+
+	NumSignals
+)
+
+// Human-readable IDs for reporting / metrics.
+var (
+	Signal_TrueOFI     = unique.Make("Alpha_1_TrueOFI")
+	Signal_Crowding    = unique.Make("Alpha_2_CrowdingRatio")
+	Signal_LatUrgency  = unique.Make("Alpha_3_LatencyUrgency")
+	Signal_SweepDepth  = unique.Make("Alpha_4_SweepPenetration")
+	Signal_Liquidation = unique.Make("Alpha_5_LiquidationRun")
+	Signal_Integrated  = unique.Make("Alpha_Integrated_StateVector")
+)
+
+var ActiveSignals = []SignalID{
+	Signal_TrueOFI,
+	Signal_Crowding,
+	Signal_LatUrgency,
+	Signal_SweepDepth,
+	Signal_Liquidation,
+	Signal_Integrated,
 }
 
-var StudyPool = sync.Pool{
-	New: func() any { return &StudyAggregator{} },
+// ============================================================================
+//  Market Physics (State Machine)
+// ============================================================================
+
+type LiquidationState struct {
+	Active     bool
+	Side       int8    // +1 for Buy run, -1 for Sell run
+	StartPrice float64 // price where the run started
+	MaxPrice   float64 // for buys: max; for sells: min
+	Volume     float64 // accumulated volume in this run
+	LastSeq    uint32  // last sequence seen in this run
 }
 
-func RunMultiHorizonStudy(raw *TBBOColumns, agg *StudyAggregator) {
-	n := raw.Count
-	if n < 1000 {
+type MarketPhysics struct {
+	// Identity & continuity
+	LastSeq   uint32
+	validHist bool // false if we hit a sequence gap and need to rebuild windows
+
+	// Previous L1 snapshot (t-1)
+	PrevTime  uint64
+	PrevBidSz float64
+	PrevAskSz float64
+	PrevBidPx float64
+	PrevAskPx float64
+
+	// For metrics.go compatibility
+	PrevPrice float64 // last trade price
+	PrevMid   float64 // last midprice
+
+	// Rolling integration windows (~200ms layer)
+	OFIWindow      *RollingWindow
+	AvgBidSzWindow *RollingWindow
+	AvgAskSzWindow *RollingWindow
+	UrgencyWindow  *RollingWindow
+	SweepWindow    *RollingWindow
+
+	// Liquidation state machine
+	LiqState LiquidationState
+}
+
+func NewMarketPhysics() *MarketPhysics {
+	// Windows tuned for ~50–100 events (≈100–500ms in active markets)
+	return &MarketPhysics{
+		OFIWindow:      NewRollingWindow(64),
+		AvgBidSzWindow: NewRollingWindow(128),
+		AvgAskSzWindow: NewRollingWindow(128),
+		UrgencyWindow:  NewRollingWindow(32),
+		SweepWindow:    NewRollingWindow(64),
+		validHist:      false,
+	}
+}
+
+// ============================================================================
+//  RollingWindow – exact sliding-window average via ring buffer
+// ============================================================================
+
+type RollingWindow struct {
+	Buf   []float64
+	Head  int
+	Sum   float64
+	Size  int
+	Count int
+}
+
+func NewRollingWindow(n int) *RollingWindow {
+	if n <= 0 {
+		n = 1
+	}
+	return &RollingWindow{
+		Buf:  make([]float64, n),
+		Size: n,
+	}
+}
+
+func (r *RollingWindow) Update(val float64) float64 {
+	if r.Size == 0 {
+		return val
+	}
+
+	// Remove old tail
+	r.Sum -= r.Buf[r.Head]
+
+	// Add new head
+	r.Buf[r.Head] = val
+	r.Sum += val
+
+	r.Head = (r.Head + 1) % r.Size
+
+	if r.Count < r.Size {
+		r.Count++
+	}
+
+	return r.Sum / float64(r.Count)
+}
+
+func (r *RollingWindow) Reset() {
+	for i := range r.Buf {
+		r.Buf[i] = 0
+	}
+	r.Sum = 0
+	r.Head = 0
+	r.Count = 0
+}
+
+// ============================================================================
+//  Atomic Primitive Calculations
+// ============================================================================
+
+const Epsilon = 1e-9
+
+// UpdateAtoms: core physics engine.
+// Converts raw TBBO events into the 5 primitives, handling sequence gaps.
+func (mp *MarketPhysics) UpdateAtoms(a *Atoms, i int, raw *TBBOColumns) {
+	// -------------------------------------------------------------------------
+	// 0) Sequence gap detection
+	// -------------------------------------------------------------------------
+	currentSeq := raw.Sequences[i]
+	if mp.validHist && currentSeq != mp.LastSeq+1 {
+		// GAP DETECTED: invalidate state to avoid phantom OFI / sweep spikes.
+		mp.OFIWindow.Reset()
+		mp.AvgBidSzWindow.Reset()
+		mp.AvgAskSzWindow.Reset()
+		mp.UrgencyWindow.Reset()
+		mp.SweepWindow.Reset()
+		mp.LiqState = LiquidationState{}
+		mp.validHist = false
+	}
+	mp.LastSeq = currentSeq
+
+	// Current TBBO state
+	q_n := raw.Sizes[i]
+	p_n := raw.Prices[i]
+	s_n := raw.Sides[i] // +1=Buy, -1=Sell, 0=none
+
+	curBidPx := raw.BidPx[i]
+	curAskPx := raw.AskPx[i]
+	curBidSz := raw.BidSz[i]
+	curAskSz := raw.AskSz[i]
+	curBidCt := float64(raw.BidCt[i])
+	curAskCt := float64(raw.AskCt[i])
+
+	mid := (curBidPx + curAskPx) * 0.5
+	a.MidPrice = mid
+
+	// First valid tick (or first after a gap): snapshot and bail.
+	if !mp.validHist {
+		mp.PrevBidSz = curBidSz
+		mp.PrevAskSz = curAskSz
+		mp.PrevBidPx = curBidPx
+		mp.PrevAskPx = curAskPx
+		mp.PrevTime = raw.TsEvent[i]
+		mp.PrevMid = mid
+		// PrevPrice is set on first trade; leave as 0 for now.
+
+		a.RawOFI = 0
+		a.CrowdSkew = 0
+		a.LatUrgency = 0
+		a.SweepKappa = 0
+		a.LiqStrength = 0
+
+		mp.validHist = true
 		return
 	}
 
-	// 1. Setup Pointers
-	ts := raw.TsEvent
-	prices := raw.Prices
-	bp := raw.BidPx
-	ap := raw.AskPx
-	bs := raw.BidSz
-	as := raw.AskSz
-	bc := raw.BidCt
-	ac := raw.AskCt
-	sides := raw.Sides
-	sizes := raw.Sizes
+	// =====================================================================
+	// 1) True Order Flow Imbalance (OFI)   OFI = q * I - ΔQ_passive
+	// =====================================================================
+	ofiVal := 0.0
 
-	splitIdx := int(float64(n) * (1.0 - OOSRatio))
-
-	// 2. Horizon Cursors
-	cursors := [HzCount]int{}
-
-	// 3. State Variables
-	var prevP float64 = prices[0]
-	var prevT uint64 = ts[0]
-	const epsilon = 1e-9
-
-	for i := 0; i < n; i++ {
-		curT := ts[i]
-		curP := prices[i]
-
-		// Robust Mid
-		mid := (bp[i] + ap[i]) * 0.5
-		if mid < epsilon {
-			mid = curP
+	if raw.Actions[i] == 'T' { // trade event
+		if s_n == 1 {
+			// Buy hits Ask: passive side is Ask
+			deltaAsk := curAskSz - mp.PrevAskSz
+			// Expected deltaAsk ≈ -q_n. Replenishment => deltaAsk > -q_n.
+			ofiVal = q_n + deltaAsk // q*I - ΔQ, I = +1
+		} else if s_n == -1 {
+			// Sell hits Bid: passive side is Bid
+			deltaBid := curBidSz - mp.PrevBidSz
+			// Expected deltaBid ≈ -q_n. Replenishment => deltaBid > -q_n.
+			ofiVal = -q_n - deltaBid // q*I - ΔQ, I = -1
 		}
-
-		// IS/OOS Bucket
-		bucket := 0
-		if i >= splitIdx {
-			bucket = 1
-		}
-
-		// --- A. CURSOR CHASE (Targets) ---
-		var returns [HzCount]float64
-		for h := 0; h < int(HzCount); h++ {
-			targetTime := curT + HorizonDurations[h]
-			c := cursors[h]
-			if c < i {
-				c = i
-			}
-			for c < n && ts[c] < targetTime {
-				c++
-			}
-			cursors[h] = c
-
-			if c >= n {
-				returns[h] = math.NaN()
-			} else {
-				futMid := (raw.AskPx[c] + raw.BidPx[c]) * 0.5
-				if futMid < epsilon {
-					futMid = raw.Prices[c]
-				}
-
-				if mid > epsilon && futMid > epsilon {
-					returns[h] = math.Log(futMid / mid)
-				} else {
-					returns[h] = math.NaN()
-				}
-			}
-		}
-
-		// --- B. BETTER MATH KERNELS ---
-
-		curQ := float64(sizes[i])
-		curS := float64(sides[i])
-		curBS := float64(bs[i])
-		curAS := float64(as[i])
-
-		dt := curT - prevT
-		if dt == 0 {
-			dt = 1
-		}
-
-		update := func(atom AtomID, signal float64) {
-			for h := 0; h < int(HzCount); h++ {
-				agg.Stats[atom][h][bucket].Update(signal, returns[h])
-			}
-		}
-
-		// 1. Trade Sign (Baseline)
-		update(AtomTradeSign, curS)
-
-		// 2. Signed Volume (Log-Damped)
-		// Large trades matter, but 10x size != 10x signal. Log dampens tails.
-		logVol := math.Log(1.0 + curQ)
-		update(AtomSignedVol, curS*logVol)
-
-		// 3. Log-Space Volume Imbalance (Robust)
-		// Reduces sensitivity to "whale" spoofing.
-		lnB := math.Log(1.0 + curBS)
-		lnA := math.Log(1.0 + curAS)
-		logImbal := (lnB - lnA) / (lnB + lnA + epsilon)
-		update(AtomVolImbalance, logImbal)
-
-		// 4. Log-Time Velocity
-		// HFT time deltas are power-law distributed. Linear dt is too noisy.
-		// We use log(1 + dt_nanos) as the denominator.
-		// We also scale by LogVolume.
-		lnDt := math.Log(math.E + float64(dt)) // Base e offset
-		logVel := (curS * logVol) / lnDt
-		update(AtomSignedVelocity, logVel)
-
-		// 5. Aggressor Deviation (Replaces Effective Spread)
-		// "How aggressively did they pay?"
-		// (Price - Mid) * Side.
-		// If Buy(1) pays > Mid, result is Positive (Bullish pressure).
-		// If Sell(-1) pays < Mid, result is Positive (Bearish pressure? No.)
-		// Wait: Sell < Mid means they crossed spread aggressively.
-		// We want: Aggressive Buy -> +Signal. Aggressive Sell -> -Signal.
-		// (Price - Mid) is positive for Aggro Buy.
-		// (Price - Mid) is negative for Aggro Sell.
-		// So we just use (Price - Mid). No Side multiplication needed?
-		// No, usually signed. Let's normalize by spread.
-		spread := ap[i] - bp[i]
-		if spread < epsilon {
-			spread = epsilon
-		}
-		aggDev := (curP - mid) / spread
-		// If Price > Mid (Aggro Buy), aggDev > 0.
-		// If Price < Mid (Aggro Sell), aggDev < 0.
-		update(AtomEffectiveSpread, aggDev)
-
-		// 6. MicroPrice Deviation (FIXED SIGN)
-		// Micro = Weighted Mid.
-		// If Micro > Mid, the book is weighted to Bids -> Bullish.
-		// Signal = Micro - Mid.
-		micro := (bp[i]*curAS + ap[i]*curBS) / (curAS + curBS + epsilon)
-		microDev := (micro - mid) * 10000.0 // Scale up small numbers
-		update(AtomMicroDev, microDev)
-
-		// 7. Count Imbalance (Log-Space)
-		// Counts are robust, but let's log them too to match VolImbalance logic.
-		lnBC := math.Log(1.0 + float64(bc[i]))
-		lnAC := math.Log(1.0 + float64(ac[i]))
-		ctImbal := (lnBC - lnAC) / (lnBC + lnAC + epsilon)
-		update(AtomCountImbalance, ctImbal)
-
-		// 8. Instant Amihud (Impact / LogVol)
-		absRet := math.Abs(curP - prevP)
-		amihud := absRet / (logVol + 1.0)
-		update(AtomInstantAmihud, amihud)
-
-		prevP = curP
-		prevT = curT
+	} else {
+		// Pure book updates: treat relative change in L1 as passive imbalance.
+		deltaBid := curBidSz - mp.PrevBidSz
+		deltaAsk := curAskSz - mp.PrevAskSz
+		ofiVal = deltaBid - deltaAsk
 	}
+
+	a.RawOFI = mp.OFIWindow.Update(ofiVal)
+
+	// =====================================================================
+	// 2) Crowding Ratio (Retail vs Inst)
+	//     Z_crowd = E[BidSz/BidCt] - E[AskSz/AskCt]
+	// =====================================================================
+	avgBidOrder := 0.0
+	if curBidCt > 0 {
+		avgBidOrder = curBidSz / curBidCt
+	}
+	avgAskOrder := 0.0
+	if curAskCt > 0 {
+		avgAskOrder = curAskSz / curAskCt
+	}
+
+	sBid := mp.AvgBidSzWindow.Update(avgBidOrder)
+	sAsk := mp.AvgAskSzWindow.Update(avgAskOrder)
+	a.CrowdSkew = sBid - sAsk
+
+	// =====================================================================
+	// 3) Latency-Adjusted Urgency   U = size / log(1 + delta)
+	// =====================================================================
+	urgency := 0.0
+	if raw.Actions[i] == 'T' && s_n != 0 && q_n > 0 {
+		d := float64(raw.TsInDelta[i])
+		if d < 0 {
+			d = 0
+		}
+
+		denom := math.Log1p(d) // safe for d ~ 0 .. large
+		if denom < 1.0 {
+			denom = 1.0
+		}
+		urgency = (q_n / denom) * float64(s_n)
+	}
+
+	a.LatUrgency = mp.UrgencyWindow.Update(urgency)
+
+	// =====================================================================
+	// 4) Sweep Penetration Depth   κ = size / prev_contra_size, only κ ≥ 1
+	// =====================================================================
+	kappa := 0.0
+	if raw.Actions[i] == 'T' && s_n != 0 && q_n > 0 {
+		if s_n == 1 {
+			// Buy hits Ask; compare to previous Ask size
+			if mp.PrevAskSz > Epsilon {
+				rawKappa := q_n / mp.PrevAskSz
+				if rawKappa >= 1.0 {
+					kappa = rawKappa // positive for buys
+				}
+			}
+		} else if s_n == -1 {
+			// Sell hits Bid; compare to previous Bid size
+			if mp.PrevBidSz > Epsilon {
+				rawKappa := q_n / mp.PrevBidSz
+				if rawKappa >= 1.0 {
+					kappa = -rawKappa // negative for sells
+				}
+			}
+		}
+	}
+
+	a.SweepKappa = mp.SweepWindow.Update(kappa)
+
+	// =====================================================================
+	// 5) Liquidation / Forced Run Detection
+	// =====================================================================
+	if raw.Actions[i] == 'T' && s_n != 0 && q_n > 0 {
+		// Dataset-specific liquidation/last flags; using bit 128 as in your text.
+		isLiquidationFlag := (raw.Flags[i] & 128) != 0
+
+		resetRun := false
+		if mp.LiqState.Active {
+			if s_n != mp.LiqState.Side {
+				// Aggressor side flipped
+				resetRun = true
+			} else {
+				// Check for retracement: price move against the run
+				if s_n == 1 && p_n < mp.LiqState.MaxPrice {
+					resetRun = true
+				}
+				if s_n == -1 && p_n > mp.LiqState.MaxPrice {
+					resetRun = true
+				}
+			}
+		}
+
+		if resetRun {
+			mp.LiqState = LiquidationState{}
+		}
+
+		if !mp.LiqState.Active {
+			// Start new run
+			mp.LiqState.Active = true
+			mp.LiqState.Side = s_n
+			mp.LiqState.StartPrice = p_n
+			mp.LiqState.MaxPrice = p_n
+			mp.LiqState.Volume = q_n
+			mp.LiqState.LastSeq = currentSeq
+		} else {
+			// Continue run
+			mp.LiqState.Volume += q_n
+			if s_n == 1 && p_n > mp.LiqState.MaxPrice {
+				mp.LiqState.MaxPrice = p_n
+			}
+			if s_n == -1 && p_n < mp.LiqState.MaxPrice {
+				mp.LiqState.MaxPrice = p_n
+			}
+			mp.LiqState.LastSeq = currentSeq
+		}
+
+		priceDev := math.Abs(p_n - mp.LiqState.StartPrice)
+		strength := mp.LiqState.Volume * (1.0 + priceDev*100.0)
+		if isLiquidationFlag {
+			strength *= 2.0
+		}
+		a.LiqStrength = strength * float64(mp.LiqState.Side)
+	} else {
+		// On non-trade events, gently decay the liquidation signal.
+		a.LiqStrength *= 0.95
+	}
+
+	// ---------------------------------------------------------------------
+	// Update internal state for next tick
+	// ---------------------------------------------------------------------
+	mp.PrevTime = raw.TsEvent[i]
+	mp.PrevBidSz = curBidSz
+	mp.PrevAskSz = curAskSz
+	mp.PrevBidPx = curBidPx
+	mp.PrevAskPx = curAskPx
+
+	// Mid always tracks latest mid
+	mp.PrevMid = mid
+
+	// PrevPrice updates only on trades with a valid price
+	if raw.Actions[i] == 'T' && p_n > 0 {
+		mp.PrevPrice = p_n
+	}
+}
+
+// ============================================================================
+//  Signal Engine: Output Generation
+// ============================================================================
+
+type SignalEngine struct{}
+
+// Compute populates the signal vector based on the Atoms
+func (se *SignalEngine) Compute(
+	atoms *Atoms,
+	mp *MarketPhysics,
+	raw *TBBOColumns,
+	i int,
+	out *[NumSignals]float64,
+) {
+	// Zero out
+	for k := 0; k < NumSignals; k++ {
+		out[k] = 0
+	}
+
+	// 1) True OFI – iceberg / cancel-adjusted flow
+	out[SigIdx_TrueOFI] = clampFloat64(atoms.RawOFI*0.5, -5.0, 5.0)
+
+	// 2) Crowding Ratio – Inst vs Retail skew
+	out[SigIdx_Crowding] = clampFloat64(atoms.CrowdSkew*0.2, -5.0, 5.0)
+
+	// 3) Latency Urgency
+	out[SigIdx_LatUrgency] = clampFloat64(atoms.LatUrgency*2.0, -5.0, 5.0)
+
+	// 4) Sweep Penetration (κ ≥ 1)
+	out[SigIdx_SweepDepth] = clampFloat64(atoms.SweepKappa*2.0, -5.0, 5.0)
+
+	// 5) Liquidation Run
+	liqSig := 0.0
+	if math.Abs(atoms.LiqStrength) > 50.0 { // tune per asset
+		liqSig = atoms.LiqStrength * 0.01
+	}
+	out[SigIdx_Liquidation] = clampFloat64(liqSig, -5.0, 5.0)
+
+	// 6) Integrated State Vector (200ms prediction layer)
+	vectorSum :=
+		1.5*out[SigIdx_TrueOFI] +
+			1.2*out[SigIdx_SweepDepth] +
+			0.8*out[SigIdx_Crowding] +
+			0.5*out[SigIdx_LatUrgency] +
+			1.0*out[SigIdx_Liquidation]
+
+	out[SigIdx_IntegratedState] = clampFloat64(vectorSum, -10.0, 10.0)
+}
+
+// ============================================================================
+//  Helpers
+// ============================================================================
+
+func clampFloat64(x, lo, hi float64) float64 {
+	if x < lo {
+		return lo
+	}
+	if x > hi {
+		return hi
+	}
+	return x
 }
